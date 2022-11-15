@@ -1,0 +1,18 @@
+ALien and Cocoon models.
+
+A Humunoid rig can be applied to this Alien with Mecanim. It is fully skinned in Maya 2010.
+If you would like the original .MA Maya file let me know.
+
+All Textures and Normal maps are 1K PNG except for the tranparency Alpha Map which is a TIF format.
+
+Any Questions or Feedback let me know.
+
+You are free to use these models as you like. 
+I only ask if you use it in a working game to leave a link in the User Review section.
+
+ENJOY!!!
+
+
+email: duane_mayberry@yahoo.co.uk
+
+www.duanesmind.co.uk
