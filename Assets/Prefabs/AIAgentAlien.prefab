@@ -86,7 +86,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fedf7d6a442cce41addd008b0370c1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goal: {fileID: 0}
+  goal: {x: 0, y: 0, z: 0}
+  wanderDistMax: 250
+  wanderDistMin: 150
+  distToStop: 2.5
 --- !u!54 &3274671407549639794
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -127,7 +130,7 @@ GameObject:
   - component: {fileID: 3510143717272066788}
   - component: {fileID: 3362874587244252209}
   m_Layer: 0
-  m_Name: Directional Light
+  m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
