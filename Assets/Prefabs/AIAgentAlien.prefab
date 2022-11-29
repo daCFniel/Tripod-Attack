@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3123313921601173159}
   - component: {fileID: 3274671407549639794}
   - component: {fileID: 5403268083823492069}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AIAgentAlien
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,8 +88,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goal: {x: 0, y: 0, z: 0}
   wanderDistMax: 250
-  wanderDistMin: 150
-  distToStop: 2.5
+  timeRangeMin: 15
+  timeRangeMax: 30
+  angleToSeePlayer: 25
+  distanceToSeePlayer: 15
 --- !u!54 &3274671407549639794
 Rigidbody:
   m_ObjectHideFlags: 0
