@@ -21,7 +21,7 @@ public class Shooter : MonoBehaviour
     void Update()
     {
         //if left control (fire1) pressed, and we still have at least 1 cell
-        if (Input.GetButtonDown("Fire1") && numberOfCells > 0)
+        if (Input.GetMouseButtonDown(0) && numberOfCells > 0)
         {
             numberOfCells--; //reduce the cell
                              //play throw sound
