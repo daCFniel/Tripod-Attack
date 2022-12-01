@@ -119,6 +119,4 @@ public class ResItem
 {
     public int horizontal;
     public int vertical;
-
-
 }

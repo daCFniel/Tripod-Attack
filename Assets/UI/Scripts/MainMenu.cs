@@ -13,6 +13,7 @@ public class MainMenu : MonoBehaviour
 {
     public string firstLevel;
     public GameObject optionsScreen;
+    public GameObject creditsScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -30,24 +31,41 @@ public class MainMenu : MonoBehaviour
     public void startGame()
     {
         SceneManager.LoadScene(firstLevel);
+        Debug.Log("Loading Game...");
     }
 
     // Function for opening the options via the 'OPTIONS' button
     public void openOptions()
     {
         optionsScreen.SetActive(true);
+        Debug.Log("Opening Options...");
     }
 
     //  Function for closing the options screen after clicking the 'OPTIONS' button
     public void closeOptions()
     {
         optionsScreen.SetActive(false);
+        Debug.Log("Closing Options...");
+    }
+
+    // Function for opening the credits screen via the 'CREDITS' button
+    public void openCredits()
+    {
+        creditsScreen.SetActive(true);
+        Debug.Log("Opening Credits...");
+    }
+
+    // Function for closing the options screen after clicking the 'OPTIONS' button
+    public void closeCredits()
+    {
+        creditsScreen.SetActive(false);
+        Debug.Log("Closing Credits...");
     }
 
     // Function for quiting the game after clicking the 'QUIT' button
     public void quitGame()
     {
         Application.Quit();
-        Debug.Log("Quitting");
+        Debug.Log("Quitting Game...");
     }
 }
