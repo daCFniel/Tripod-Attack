@@ -19,6 +19,7 @@ public class PathFind : MonoBehaviour
     public float angleToSeePlayer = 25.0f;
     public float distanceToSeePlayer = 15.0f;
     private State currentState;
+    private AIManager manager;
 
     private enum State
     {
@@ -33,6 +34,7 @@ public class PathFind : MonoBehaviour
         startPos = transform.position;
         spotlight = this.transform.Find("Light").GetComponent<Light>();
         currentState = State.WANDER;
+        manager = GameObject.FindGameObjectsWithTag("AIManager")[0].GetComponent<AIManager>();
 
         newGoal();
     }
@@ -59,11 +61,15 @@ public class PathFind : MonoBehaviour
         goal = player.transform.position;
         agent.destination = goal;
 
+        print(player.transform.position);
+
+        manager.SendChasers(player.transform.position);
+
         if (!raycastHitPlayer()) {
             currentState = State.WANDER;
         }
 
-        spotlight.color = Color.red;
+        if (spotlight) spotlight.color = Color.red;
     }
 
     private void wander() {
@@ -95,7 +101,7 @@ public class PathFind : MonoBehaviour
             }
         }
 
-        spotlight.color = Color.white;
+        if (spotlight) spotlight.color = Color.white;
     }
 
     private bool raycastHitPlayer() {

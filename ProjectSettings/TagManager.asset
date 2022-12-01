@@ -11,6 +11,8 @@ TagManager:
   - Obstacle
   - Water
   - Bubble
+  - EnemyScout
+  - EnemyChaser
   layers:
   - Default
   - TransparentFX
