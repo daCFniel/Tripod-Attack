@@ -2,13 +2,14 @@
 /// Script for controlling the options menu of the Alien Tripod Attack game.
 /// 
 /// @author James Venables
-/// @version 1 - 30.11.2022
+/// @version 1 - 02.12.2022
 /// </summary>
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Audio;
 
 // Class controlling the options screen.
 public class OptionsScreen : MonoBehaviour
@@ -20,6 +21,16 @@ public class OptionsScreen : MonoBehaviour
     private int selectedResolution;
 
     public TMP_Text resolutionLabel;
+
+    public AudioMixer theMixer;
+
+    public TMP_Text mastLabel;
+    public TMP_Text musicLabel;
+    public TMP_Text sfxLabel;
+
+    public Slider mastSlider;
+    public Slider musicSlider;
+    public Slider sfxSlider;
 
     // Start is called before the first frame update
     void Start()
@@ -58,6 +69,19 @@ public class OptionsScreen : MonoBehaviour
 
             updateResLabel();
         }
+
+        // For removing the default starting values in the audio settings:
+        float vol = 0f;
+        theMixer.GetFloat("MasterVol", out vol);
+        mastSlider.value = vol;
+        theMixer.GetFloat("MusicVol", out vol);
+        musicSlider.value = vol;
+        theMixer.GetFloat("SFXVol", out vol);
+        sfxSlider.value = vol;
+
+        mastLabel.text = Mathf.RoundToInt(mastSlider.value + 80).ToString();
+        musicLabel.text = Mathf.RoundToInt(musicSlider.value + 80).ToString();
+        sfxLabel.text = Mathf.RoundToInt(sfxSlider.value + 80).ToString();
     }
 
     // Update is called once per frame
@@ -111,6 +135,36 @@ public class OptionsScreen : MonoBehaviour
         }
 
         Screen.SetResolution(resolutions[selectedResolution].horizontal, resolutions[selectedResolution].vertical, fullScreenTog.isOn);
+    }
+
+    // Function for controling the master volume control setting.
+    public void setMasterVolume()
+    {
+        mastLabel.text = Mathf.RoundToInt(mastSlider.value + 80).ToString();
+
+        theMixer.SetFloat("MasterVol", mastSlider.value);
+
+        PlayerPrefs.SetFloat("MasterVol", mastSlider.value);    // used to remember user's previous settings/selections
+    }
+
+    // Function for controling the music volume control setting.
+    public void setMusicVolume()
+    {
+        musicLabel.text = Mathf.RoundToInt(musicSlider.value + 80).ToString();
+
+        theMixer.SetFloat("MusicVol", musicSlider.value);
+
+        PlayerPrefs.SetFloat("MusicVol", musicSlider.value);    // used to remember user's previous settings/selections
+    }
+
+    // Function for controling the SFX volume control setting.
+    public void setSFXVolume()
+    {
+        sfxLabel.text = Mathf.RoundToInt(sfxSlider.value + 80).ToString();
+
+        theMixer.SetFloat("SFXVol", sfxSlider.value);
+
+        PlayerPrefs.SetFloat("SFXVol", sfxSlider.value);    // used to remember user's previous settings/selections
     }
 }
 // Class controlling the resolution settings.
