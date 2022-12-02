@@ -9,6 +9,10 @@ TagManager:
   - Enemy
   - Pickup
   - Obstacle
+  - Water
+  - Bubble
+  - EnemyScout
+  - EnemyChaser
   layers:
   - Default
   - TransparentFX
@@ -20,6 +24,7 @@ TagManager:
   - 
   - 
   - 
+  - Raycast Enemy
   - 
   - 
   - 
@@ -29,8 +34,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Post Processing
   - 
   - 
   - 
