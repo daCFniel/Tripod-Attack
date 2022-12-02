@@ -11,12 +11,18 @@ public class AIManager : MonoBehaviour
     public GameObject prefabEnemyChaser;
 
     public int chaserCount = 10;
-    private bool chasersAreActive = false;
+    public int chasersActive = 0;
+
+    private GameObject[] chasers;
 
     private void Start()
     {
         // ChangeSpeedMultiplier(5.0f);
         // SpawnEnemy();
+
+        chasers = new GameObject[chaserCount];
+        PopulateChaserArray();
+
         foreach (Transform child in transform)
         {
             if (child.CompareTag("EnemyScout"))
@@ -31,6 +37,17 @@ public class AIManager : MonoBehaviour
         }
     }
 
+    private void PopulateChaserArray()
+    {
+        for (int i = 0; i < chaserCount; i++)
+        {
+            GameObject enemy = Instantiate(prefabEnemyChaser, transform);
+            enemy.SetActive(false);
+            SetAgentSpeed(enemy.transform, chaserBaseSpeed);
+            chasers[i] = enemy;
+        }
+    }
+
     private void SetAgentSpeed(Transform agentTransform, float speedMult)
     {
         NavMeshAgent agent = agentTransform.GetComponent<NavMeshAgent>();
@@ -41,16 +58,17 @@ public class AIManager : MonoBehaviour
         agent.acceleration = scoutBaseSpeed * (8f / 3.5f);
     }
 
-    private void SpawnEnemy()
+    private void SpawnEnemy(int index)
     {
-        GameObject enemy = Instantiate(prefabEnemyChaser, transform);
-        SetAgentSpeed(enemy.transform, chaserBaseSpeed);
+        GameObject enemy = chasers[index];
         enemy.transform.position = enemySpawnPosition.transform.position;
+        enemy.SetActive(true);
+        chasersActive += 1;
     }
 
     public void SendChasers(Vector3 playerPosition)
     {
-        if (!chasersAreActive)
+        if (chasersActive != chaserCount)
         {
             SpawnChasers();
         }
@@ -61,11 +79,13 @@ public class AIManager : MonoBehaviour
 
     private void SpawnChasers()
     {
-        chasersAreActive = true;
-
         for (int i = 0; i < chaserCount; i++)
-        {
-            SpawnEnemy();
+        { 
+            GameObject enemy = chasers[i];
+
+            if (enemy.activeInHierarchy == true) continue;
+
+            SpawnEnemy(i);
         }
     }
 
@@ -79,6 +99,12 @@ public class AIManager : MonoBehaviour
             }
 
             child.GetComponent<PathFind>().goal = playerPos;
+            child.GetComponent<PathFind>().startPos = playerPos;
+            child.GetComponent<PathFind>().lastSeenPlayerPos = playerPos;
+
+            child.GetComponent<PathFind>().currentState = PathFind.State.WANDER;
+            child.GetComponent<PathFind>().timeSinceLastSeenPlayer = 0.0f;
+            child.GetComponent<PathFind>().hasReachedInitialGoal = false;
         }
     }
 }

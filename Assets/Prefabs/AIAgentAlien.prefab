@@ -89,6 +89,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goal: {x: 0, y: 0, z: 0}
+  spotlight: {fileID: 3362874587244252209}
   wanderDistMax: 250
   timeRangeMin: 7
   timeRangeMax: 15
