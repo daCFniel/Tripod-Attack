@@ -88,6 +88,9 @@ public class KeyboardMovement : MonoBehaviour
 
     [Header("Physics")]
     [SerializeField] Vector3 velocity;
+    [SerializeField] float fallWillHurtVelocity = 5f;
+    [SerializeField] float fallTime;
+    bool falling;
     float acceleration;
     const float GRAVITY = 9.81f;
 
@@ -244,6 +247,28 @@ public class KeyboardMovement : MonoBehaviour
         // Applying gravity physics to the movement
         velocity.y += acceleration * Time.deltaTime; // v = a * t
         controller.Move(velocity * Time.deltaTime);
+        HandleFallDamage();
+    }
+
+
+    private void HandleFallDamage()
+    {
+        // If player falling exceeds 10, consider they are falling
+        if (velocity.y < -fallWillHurtVelocity && !isOnTheGround)
+        {
+            // Calculate how much time the character is free falling
+            fallTime += Time.deltaTime;
+            falling = true;
+        }
+        else if (falling)
+        {
+            // Hurt the player based on how long they fell
+            Debug.Log("Damage from fall: " + Mathf.Round(fallTime * 10));
+
+            // Reset fall measurements
+            falling = false;
+            fallTime = 0;
+        }
     }
 
     private void CheckIsOnTheGround()
