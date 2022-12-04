@@ -13,14 +13,15 @@ TagManager:
   - Bubble
   - EnemyScout
   - EnemyChaser
+  - AIManager
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
+  - Interactable
   - 
   - 
   - 
