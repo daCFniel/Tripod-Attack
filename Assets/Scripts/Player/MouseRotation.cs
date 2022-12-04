@@ -5,8 +5,14 @@ using UnityEngine;
 
 public class MouseRotation : MonoBehaviour
 {
-    [SerializeField]
-    float mouseSensivity = 100f;
+
+    [Header("Look Parameters")]
+    [SerializeField, Range(1, 200)] private float mouseSensivityX = 100.0f;
+    [SerializeField, Range(1, 200)] private float mouseSensivityY = 100.0f;
+    [SerializeField] private float upperLookLimit = 85.0f;
+    [SerializeField] private float lowerLookLimit = -85.0f;
+
+
     [SerializeField]
     Transform characterTransform;
     // Rotation around X-axis
@@ -24,12 +30,12 @@ public class MouseRotation : MonoBehaviour
     void Update()
     {
         // Get mouse x and y position
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensivityX * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensivityY * Time.deltaTime;
 
         xRotation -= mouseY;
         // Limit the camera's x axis rotation to 180° agle
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        xRotation = Mathf.Clamp(xRotation, lowerLookLimit, upperLookLimit);
 
         // Rotate around camera's x axis (up and down)
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 /// <summary>
 /// Daniel Bielech db662 - COMP6100
@@ -5,13 +6,38 @@ using UnityEngine;
 
 public class KeyboardMovement : MonoBehaviour
 {
-    const float GRAVITY = 9.81f;
+
+    [Header("Functinal Options")]
+    [SerializeField]
+    bool isOnTheGround;
+    [SerializeField]
+    bool canSprint = true;
+    [SerializeField]
+    bool canJump = true;
+    [SerializeField]
+    bool canMove = true;
+    [SerializeField] 
+    bool canCrouch = true;
+
+    bool IsSprinting => canSprint && Input.GetKey(sprintKey);
+    bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
+    bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
 
     [Header("Instances")]
-    CharacterController controller;
     [SerializeField]
     LayerMask groundMask; // Control what objects the Physics.CheckSphere should check for
     Transform groundCheck;
+    CharacterController controller;
+    Camera camera;
+
+    [Header("Crouch Parameters")]
+    [SerializeField] float crouchHeight = 0.5f;
+    [SerializeField] float standingHeight = 2f;
+    [SerializeField] float timeToCrouch = 0.25f;
+    [SerializeField] Vector3 crouchingCenter = new (0, 0.5f, 0);
+    [SerializeField] Vector3 standingCenter = new (0, 0, 0);
+    bool IsCrouching;
+    bool duringCrouchAnimation;
 
     [Header("Movement Parameters")]
     [SerializeField]
@@ -19,23 +45,28 @@ public class KeyboardMovement : MonoBehaviour
     [SerializeField]
     float sprintSpeed = 20f;
     [SerializeField]
+    float crouchSpeed = 5f;
+
+    [Header("Jump Parameters")]
+    [SerializeField]
     float jumpHeight = 10f;
     [SerializeField]
     float groundDistance = 0.4f;
 
-    [Header("Functinal Options")]
-    bool isOnTheGround;
-    bool canMove = true;
-    bool canSprint = true;
-    bool IsSprinting => canSprint && Input.GetKey(sprintKey);
-
     [Header("Physics")]
-    float acceleration;
+    [SerializeField]
     Vector3 velocity;
+    float acceleration;
+    const float GRAVITY = 9.81f;
 
     [Header("Controls")]
     [SerializeField]
     KeyCode sprintKey = KeyCode.LeftShift;
+    [SerializeField]
+    KeyCode jumpKey = KeyCode.Space;
+    [SerializeField]
+    KeyCode crouchKey = KeyCode.LeftControl;
+
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +74,7 @@ public class KeyboardMovement : MonoBehaviour
         controller = GetComponent<CharacterController>();
         acceleration = -GRAVITY;
         groundCheck = transform.Find("GroundCheck");
+        camera = GetComponentInChildren<Camera>();
     }
 
     // Update is called once per frame
@@ -52,6 +84,8 @@ public class KeyboardMovement : MonoBehaviour
         {
             CheckIsOnTheGround();
             MoveOnInput();
+            HandleJump();
+            HandleCrouch();
             ApplyGravity();
         }
     }
@@ -64,16 +98,27 @@ public class KeyboardMovement : MonoBehaviour
 
         // Move the character based on the keyboard input
         Vector3 movementVector = transform.right * x + transform.forward * z;
-        controller.Move((IsSprinting ? sprintSpeed : speed) * Time.deltaTime * movementVector.normalized);
+        controller.Move((IsCrouching ? crouchSpeed : IsSprinting ? sprintSpeed : speed) * Time.deltaTime * movementVector.normalized);
+    }
 
+    private void HandleJump()
+    {
         // Jumping
-        if (Input.GetButtonDown("Jump") && isOnTheGround)
+        if (ShouldJump)
         {
             // Calculate velocity needed to jump set height
             float v = Mathf.Sqrt(jumpHeight * GRAVITY * 2);
             velocity.y = v;
         }
+    }
 
+    private void HandleCrouch()
+    {
+        // Crouching
+        if (ShouldCrouch)
+        {
+            StartCoroutine(CrouchStand());
+        }
     }
 
     private void ApplyGravity()
@@ -95,5 +140,41 @@ public class KeyboardMovement : MonoBehaviour
         {
             velocity.y = -2f;
         }
+    }
+
+
+    private IEnumerator CrouchStand()
+    {
+        // Check for collison above the character while crouching
+        // Break the Coroutine if the object is detected (character cannot stand up)
+        if (IsCrouching && Physics.Raycast(camera.transform.position, Vector3.up, 1f))
+            yield break;
+
+        duringCrouchAnimation = true;
+
+        // Set target values
+        float timeElapsed = 0f;
+        float targetHeight = IsCrouching ? standingHeight : crouchHeight;
+        float currentHeight = controller.height;
+        Vector3 targetCenter = IsCrouching ? standingCenter : crouchingCenter;
+        Vector3 currentCenter = controller.center;
+
+        // Crouching loop
+        while (timeElapsed < timeToCrouch)
+        {
+            controller.height = Mathf.Lerp(currentHeight, targetHeight, timeElapsed / timeToCrouch);
+            // By lerping the center of the controller we enable smooth camera movement when crouching
+            controller.center = Vector3.Lerp(currentCenter, targetCenter, timeElapsed / timeToCrouch);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Sanity check
+        controller.height = targetHeight;
+        controller.center = targetCenter;
+
+        IsCrouching = !IsCrouching;
+
+        duringCrouchAnimation = false;
     }
 }
