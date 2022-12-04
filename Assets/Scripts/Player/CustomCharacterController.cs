@@ -258,9 +258,9 @@ public class CustomCharacterController : MonoBehaviour
     private void CheckIsOnTheGround()
     {
         // Check wether the character is touching the ground
-        //isOnTheGround = controller.isGrounded;
+        isOnTheGround = controller.isGrounded;
         // Custom ground checking
-        isOnTheGround = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        //isOnTheGround = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         // Reset the y velocity (falling) when the playing is touching the ground
         if (isOnTheGround && velocity.y < 0)
