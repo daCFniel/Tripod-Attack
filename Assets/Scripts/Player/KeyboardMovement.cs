@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 /// <summary>
 /// Daniel Bielech db662 - COMP6100
@@ -17,6 +18,7 @@ public class KeyboardMovement : MonoBehaviour
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
     [SerializeField] bool canZoom = true;
+    [SerializeField] bool canInteract = true;
 
     // Lambda fields
     bool IsSprinting => canSprint && Input.GetKey(sprintKey);
@@ -26,6 +28,7 @@ public class KeyboardMovement : MonoBehaviour
     bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
     float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? sprintBobSpeed : runBobSpeed;
     float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
+    bool ShouldInteract => Input.GetKeyDown(interactKey) && currentInteractable != null;
 
     [Header("Instances")]
     [SerializeField] LayerMask groundMask; // Control what objects the Physics.CheckSphere should check for
@@ -45,6 +48,8 @@ public class KeyboardMovement : MonoBehaviour
     [Header("Jump Parameters")]
     [SerializeField] float jumpHeight = 10f;
     [SerializeField] float groundDistance = 0.4f;
+    [SerializeField] float sloapLimit = 100f;
+    float defaultSloap;
 
     [Header("Crouch Parameters")]
     [SerializeField] float crouchHeight = 0.5f;
@@ -69,6 +74,12 @@ public class KeyboardMovement : MonoBehaviour
     float timer; // used to determine where the camera should be at given moment
     bool duringHeightLevelAnimation;
 
+    [Header("Interactions")]
+    [SerializeField] Vector3 interactionRayPoint = default;
+    [SerializeField] float interactionDistance = default;
+    [SerializeField] LayerMask interactionLayer = default;
+    Interactable currentInteractable;
+
     [Header("Zoom Feature")]
     [SerializeField] float timeToZoom = 0.4f;
     [SerializeField] float zoomFOV = 30f; // Target camera Field of View when zooming in
@@ -86,6 +97,7 @@ public class KeyboardMovement : MonoBehaviour
     [SerializeField] KeyCode crouchKey = KeyCode.C;
     [SerializeField] KeyCode walkKey = KeyCode.LeftControl;
     [SerializeField] KeyCode zoomKey = KeyCode.Mouse1;
+    [SerializeField] KeyCode interactKey = KeyCode.E;
     void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -94,6 +106,7 @@ public class KeyboardMovement : MonoBehaviour
         camera = GetComponentInChildren<Camera>();
         defaultYPos = camera.transform.localPosition.y;
         defaultFOV = camera.fieldOfView;
+        defaultSloap = controller.slopeLimit;
     }
 
     // Update is called once per frame
@@ -107,7 +120,47 @@ public class KeyboardMovement : MonoBehaviour
             HandleCrouch();
             if (useHeadbob) CreateHeadbobEffect();
             if (canZoom) ZoomCamera();
+            if (canInteract)
+            {
+                ProcessInteractions();
+                HandleInteractionsInput();
+            }
             ApplyGravity();
+        }
+    }
+
+    // Perform an action after pressing an interaction key
+    private void HandleInteractionsInput()
+    {
+        if (ShouldInteract && Physics.Raycast(camera.ViewportPointToRay(interactionRayPoint), out _, interactionDistance, interactionLayer))
+        {
+            currentInteractable.OnInteract();
+        }
+    }
+
+    // Look for interactable objects
+    private void ProcessInteractions()
+    {
+        // Take into consideration all colliders when checking for interactable objects (To prevent interacting through objects)
+        if (Physics.Raycast(camera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance))
+        {
+            bool collidedWithInteractableLayer = hit.collider.gameObject.layer == Interactable.interactableLayerId;
+            // If its on Interactable layer and the character is not currently interacting (or is changing focus to other object next by)
+            if (collidedWithInteractableLayer && (currentInteractable == null || hit.collider.gameObject.GetInstanceID() != currentInteractable.GetInstanceID()))
+            {
+                // Try to get the object the ray collided with
+                hit.collider.TryGetComponent(out currentInteractable);
+
+                if (currentInteractable)
+                {
+                    currentInteractable.OnFocus();
+                }
+            }
+        } // Stop interacting
+        else if (currentInteractable)
+        {
+            currentInteractable.OnLoseFocus();
+            currentInteractable = null;
         }
     }
 
@@ -123,7 +176,7 @@ public class KeyboardMovement : MonoBehaviour
             // Start zooming in
             zoomRoutine = StartCoroutine(ToggleCameraZoom(true));
         }
- 
+
         if (Input.GetKeyUp(zoomKey))
         {
             if (zoomRoutine != null)
@@ -203,7 +256,12 @@ public class KeyboardMovement : MonoBehaviour
         // Reset the y velocity (falling) when the playing is touching the ground
         if (isOnTheGround && velocity.y < 0)
         {
+            controller.slopeLimit = defaultSloap;
             velocity.y = -2f;
+        }
+        else // Change the slope when jumping
+        {
+            controller.slopeLimit = sloapLimit;
         }
     }
 
