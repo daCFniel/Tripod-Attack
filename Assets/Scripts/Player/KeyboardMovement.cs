@@ -20,12 +20,17 @@ public class KeyboardMovement : MonoBehaviour
     [SerializeField]
     bool canCrouch = true;
     [SerializeField]
+    bool canWalk = true;
+    [SerializeField]
     bool useHeadbob = true;
 
     bool IsSprinting => canSprint && Input.GetKey(sprintKey);
+    bool IsWalking => canWalk && Input.GetKey(walkKey);
     bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
+    float MoveSpeed => IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? sprintSpeed : runSpeed;
     bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
-    float bobSpeed => IsCrouching ? crouchBobSpeed : IsSprinting ? sprintBobSpeed : walkBobSpeed;
+    float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? sprintBobSpeed : runBobSpeed;
+    float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
 
     [Header("Instances")]
     [SerializeField]
@@ -36,11 +41,14 @@ public class KeyboardMovement : MonoBehaviour
 
     [Header("Movement Parameters")]
     [SerializeField]
-    float speed = 10f;
+    float crouchSpeed = 4f;
+    [SerializeField]
+    float walkSpeed = 6f;
+    [SerializeField]
+    float runSpeed = 10f;
     [SerializeField]
     float sprintSpeed = 20f;
-    [SerializeField]
-    float crouchSpeed = 5f;
+
     [SerializeField]
     Vector3 movementDirection;
 
@@ -60,12 +68,14 @@ public class KeyboardMovement : MonoBehaviour
     bool duringCrouchAnimation;
 
     [Header("Headbob Parameters")]
-    [SerializeField] float walkBobSpeed = 10f;
-    [SerializeField] float walkBobAmount = 0.05f;
-    [SerializeField] float sprintBobSpeed = 15f;
-    [SerializeField] float sprintBobAmount = 0.1f;
     [SerializeField] float crouchBobSpeed = 5f;
     [SerializeField] float crouchBobAmount = 0.025f;
+    [SerializeField] float walkBobSpeed = 10f;
+    [SerializeField] float walkBobAmount = 0.05f;
+    [SerializeField] float runBobSpeed = 10f;
+    [SerializeField] float runBobAmount = 0.05f;
+    [SerializeField] float sprintBobSpeed = 15f;
+    [SerializeField] float sprintBobAmount = 0.1f;
     [SerializeField] float timeToReturnCamera = 0.1f;
     float defaultYPos = 0; // camera position
     float timer; // used to determine where the camera should be at given moment
@@ -83,8 +93,9 @@ public class KeyboardMovement : MonoBehaviour
     [SerializeField]
     KeyCode jumpKey = KeyCode.Space;
     [SerializeField]
-    KeyCode crouchKey = KeyCode.LeftControl;
-
+    KeyCode crouchKey = KeyCode.C;
+    [SerializeField]
+    KeyCode walkKey = KeyCode.LeftControl;
     void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -114,9 +125,9 @@ public class KeyboardMovement : MonoBehaviour
         if (Mathf.Abs(movementDirection.x) > 0.1f || Mathf.Abs(movementDirection.z) > 0.1f)
         {
             // Headbob disabled when the character is not standing on the ground
-            if (!isOnTheGround) return;
-            timer += Time.deltaTime * bobSpeed;
-            float cameraTransitionY = defaultYPos + Mathf.Sin(timer) * (IsCrouching ? crouchBobAmount : IsSprinting ? sprintBobAmount : walkBobAmount);
+            if (!isOnTheGround || duringHeightLevelAnimation) return;
+            timer += Time.deltaTime * BobSpeed;
+            float cameraTransitionY = defaultYPos + Mathf.Sin(timer) * BobAmount;
             camera.transform.localPosition = new Vector3(camera.transform.localPosition.x, cameraTransitionY, camera.transform.localPosition.z);
         }
         // Reset the camera y position to default when the character stops moving
@@ -134,7 +145,7 @@ public class KeyboardMovement : MonoBehaviour
 
         // Move the character based on the keyboard input
         Vector3 movementVector = transform.right * x + transform.forward * z;
-        controller.Move((IsCrouching ? crouchSpeed : IsSprinting ? sprintSpeed : speed) * Time.deltaTime * movementVector.normalized);
+        controller.Move(MoveSpeed * Time.deltaTime * movementVector.normalized);
         movementDirection = movementVector;
     }
 

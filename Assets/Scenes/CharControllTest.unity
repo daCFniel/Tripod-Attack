@@ -51144,13 +51144,15 @@ MonoBehaviour:
   canJump: 1
   canMove: 1
   canCrouch: 1
+  canWalk: 1
   useHeadbob: 1
   groundMask:
     serializedVersion: 2
     m_Bits: 8
-  speed: 10
+  crouchSpeed: 4
+  walkSpeed: 6
+  runSpeed: 10
   sprintSpeed: 20
-  crouchSpeed: 5
   movementDirection: {x: 0, y: 0, z: 0}
   jumpHeight: 2
   groundDistance: 0.4
@@ -51159,17 +51161,20 @@ MonoBehaviour:
   timeToCrouch: 0.25
   crouchingCenter: {x: 0, y: 0.5, z: 0}
   standingCenter: {x: 0, y: 0, z: 0}
-  walkBobSpeed: 20
-  walkBobAmount: 0.1
+  crouchBobSpeed: 7
+  crouchBobAmount: 0.03
+  walkBobSpeed: 8
+  walkBobAmount: 0.04
+  runBobSpeed: 10
+  runBobAmount: 0.05
   sprintBobSpeed: 30
   sprintBobAmount: 0.15
-  crouchBobSpeed: 10
-  crouchBobAmount: 0.05
   timeToReturnCamera: 0.1
   velocity: {x: 0, y: 0, z: 0}
   sprintKey: 304
   jumpKey: 32
-  crouchKey: 306
+  crouchKey: 99
+  walkKey: 306
 --- !u!143 &1637185963
 CharacterController:
   m_ObjectHideFlags: 0
