@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 /// <summary>
@@ -16,12 +17,15 @@ public class KeyboardMovement : MonoBehaviour
     bool canJump = true;
     [SerializeField]
     bool canMove = true;
-    [SerializeField] 
+    [SerializeField]
     bool canCrouch = true;
+    [SerializeField]
+    bool useHeadbob = true;
 
     bool IsSprinting => canSprint && Input.GetKey(sprintKey);
     bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
     bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
+    float bobSpeed => IsCrouching ? crouchBobSpeed : IsSprinting ? sprintBobSpeed : walkBobSpeed;
 
     [Header("Instances")]
     [SerializeField]
@@ -30,15 +34,6 @@ public class KeyboardMovement : MonoBehaviour
     CharacterController controller;
     Camera camera;
 
-    [Header("Crouch Parameters")]
-    [SerializeField] float crouchHeight = 0.5f;
-    [SerializeField] float standingHeight = 2f;
-    [SerializeField] float timeToCrouch = 0.25f;
-    [SerializeField] Vector3 crouchingCenter = new (0, 0.5f, 0);
-    [SerializeField] Vector3 standingCenter = new (0, 0, 0);
-    bool IsCrouching;
-    bool duringCrouchAnimation;
-
     [Header("Movement Parameters")]
     [SerializeField]
     float speed = 10f;
@@ -46,12 +41,35 @@ public class KeyboardMovement : MonoBehaviour
     float sprintSpeed = 20f;
     [SerializeField]
     float crouchSpeed = 5f;
+    [SerializeField]
+    Vector3 movementDirection;
 
     [Header("Jump Parameters")]
     [SerializeField]
     float jumpHeight = 10f;
     [SerializeField]
     float groundDistance = 0.4f;
+
+    [Header("Crouch Parameters")]
+    [SerializeField] float crouchHeight = 0.5f;
+    [SerializeField] float standingHeight = 2f;
+    [SerializeField] float timeToCrouch = 0.25f;
+    [SerializeField] Vector3 crouchingCenter = new(0, 0.5f, 0);
+    [SerializeField] Vector3 standingCenter = new(0, 0, 0);
+    bool IsCrouching;
+    bool duringCrouchAnimation;
+
+    [Header("Headbob Parameters")]
+    [SerializeField] float walkBobSpeed = 10f;
+    [SerializeField] float walkBobAmount = 0.05f;
+    [SerializeField] float sprintBobSpeed = 15f;
+    [SerializeField] float sprintBobAmount = 0.1f;
+    [SerializeField] float crouchBobSpeed = 5f;
+    [SerializeField] float crouchBobAmount = 0.025f;
+    [SerializeField] float timeToReturnCamera = 0.1f;
+    float defaultYPos = 0; // camera position
+    float timer; // used to determine where the camera should be at given moment
+    bool duringHeightLevelAnimation;
 
     [Header("Physics")]
     [SerializeField]
@@ -67,14 +85,13 @@ public class KeyboardMovement : MonoBehaviour
     [SerializeField]
     KeyCode crouchKey = KeyCode.LeftControl;
 
-
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         controller = GetComponent<CharacterController>();
         acceleration = -GRAVITY;
         groundCheck = transform.Find("GroundCheck");
         camera = GetComponentInChildren<Camera>();
+        defaultYPos = camera.transform.localPosition.y;
     }
 
     // Update is called once per frame
@@ -86,9 +103,28 @@ public class KeyboardMovement : MonoBehaviour
             MoveOnInput();
             HandleJump();
             HandleCrouch();
+            if (useHeadbob) CreateHeadbobEffect();
             ApplyGravity();
         }
     }
+
+    private void CreateHeadbobEffect()
+    {
+        // Check if the character is moving (abs because the movement direction can be negative)
+        if (Mathf.Abs(movementDirection.x) > 0.1f || Mathf.Abs(movementDirection.z) > 0.1f)
+        {
+            // Headbob disabled when the character is not standing on the ground
+            if (!isOnTheGround) return;
+            timer += Time.deltaTime * bobSpeed;
+            float cameraTransitionY = defaultYPos + Mathf.Sin(timer) * (IsCrouching ? crouchBobAmount : IsSprinting ? sprintBobAmount : walkBobAmount);
+            camera.transform.localPosition = new Vector3(camera.transform.localPosition.x, cameraTransitionY, camera.transform.localPosition.z);
+        }
+        // Reset the camera y position to default when the character stops moving
+        else if (defaultYPos != camera.transform.localPosition.y)
+        {
+            StartCoroutine(HeightLevel());
+        }
+    } 
 
     private void MoveOnInput()
     {
@@ -99,6 +135,7 @@ public class KeyboardMovement : MonoBehaviour
         // Move the character based on the keyboard input
         Vector3 movementVector = transform.right * x + transform.forward * z;
         controller.Move((IsCrouching ? crouchSpeed : IsSprinting ? sprintSpeed : speed) * Time.deltaTime * movementVector.normalized);
+        movementDirection = movementVector;
     }
 
     private void HandleJump()
@@ -123,17 +160,17 @@ public class KeyboardMovement : MonoBehaviour
 
     private void ApplyGravity()
     {
-            // Applying gravity physics to the movement
-            velocity.y += acceleration * Time.deltaTime; // v = a * t
-            controller.Move(velocity * Time.deltaTime);
+        // Applying gravity physics to the movement
+        velocity.y += acceleration * Time.deltaTime; // v = a * t
+        controller.Move(velocity * Time.deltaTime);
     }
 
     private void CheckIsOnTheGround()
     {
         // Check wether the character is touching the ground
-        isOnTheGround = controller.isGrounded;
+        //isOnTheGround = controller.isGrounded;
         // Custom ground checking
-        //isOnTheGround = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isOnTheGround = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         // Reset the y velocity (falling) when the playing is touching the ground
         if (isOnTheGround && velocity.y < 0)
@@ -176,5 +213,33 @@ public class KeyboardMovement : MonoBehaviour
         IsCrouching = !IsCrouching;
 
         duringCrouchAnimation = false;
+    }
+
+    // Default camera height smoother
+    private IEnumerator HeightLevel()
+    {
+
+        if (duringCrouchAnimation)
+        {
+            yield break;
+        }
+
+        duringHeightLevelAnimation = true;
+
+        float timeElapsed = 0;
+        Vector3 currentHeight = camera.transform.localPosition;
+        Vector3 targetHeight;
+
+        targetHeight = new Vector3(camera.transform.localPosition.x, defaultYPos, camera.transform.localPosition.z);
+
+        while (timeElapsed < timeToReturnCamera)
+        {
+            camera.transform.localPosition = Vector3.Lerp(currentHeight, targetHeight, timeElapsed / timeToReturnCamera);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        duringHeightLevelAnimation = false;
+
     }
 }
