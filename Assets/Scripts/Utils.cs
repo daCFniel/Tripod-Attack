@@ -5,9 +5,8 @@ using UnityEngine;
 public class Utils : MonoBehaviour
 {
     // Update is called once per frame
-    void Update()
+    void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Debug.Log("Game Started.");
     }
 }
