@@ -9,21 +9,16 @@ public class KeyboardMovement : MonoBehaviour
 {
 
     [Header("Functinal Options")]
-    [SerializeField]
-    bool isOnTheGround;
-    [SerializeField]
-    bool canSprint = true;
-    [SerializeField]
-    bool canJump = true;
-    [SerializeField]
-    bool canMove = true;
-    [SerializeField]
-    bool canCrouch = true;
-    [SerializeField]
-    bool canWalk = true;
-    [SerializeField]
-    bool useHeadbob = true;
+    [SerializeField] bool isOnTheGround;
+    [SerializeField] bool canSprint = true;
+    [SerializeField] bool canJump = true;
+    [SerializeField] bool canMove = true;
+    [SerializeField] bool canCrouch = true;
+    [SerializeField] bool canWalk = true;
+    [SerializeField] bool useHeadbob = true;
+    [SerializeField] bool canZoom = true;
 
+    // Lambda fields
     bool IsSprinting => canSprint && Input.GetKey(sprintKey);
     bool IsWalking => canWalk && Input.GetKey(walkKey);
     bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
@@ -33,30 +28,23 @@ public class KeyboardMovement : MonoBehaviour
     float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
 
     [Header("Instances")]
-    [SerializeField]
-    LayerMask groundMask; // Control what objects the Physics.CheckSphere should check for
+    [SerializeField] LayerMask groundMask; // Control what objects the Physics.CheckSphere should check for
     Transform groundCheck;
     CharacterController controller;
     Camera camera;
 
     [Header("Movement Parameters")]
-    [SerializeField]
-    float crouchSpeed = 4f;
-    [SerializeField]
-    float walkSpeed = 6f;
-    [SerializeField]
-    float runSpeed = 10f;
-    [SerializeField]
-    float sprintSpeed = 20f;
+    [SerializeField] float crouchSpeed = 4f;
+    [SerializeField] float walkSpeed = 6f;
+    [SerializeField] float runSpeed = 10f;
+    [SerializeField] float sprintSpeed = 20f;
 
     [SerializeField]
     Vector3 movementDirection;
 
     [Header("Jump Parameters")]
-    [SerializeField]
-    float jumpHeight = 10f;
-    [SerializeField]
-    float groundDistance = 0.4f;
+    [SerializeField] float jumpHeight = 10f;
+    [SerializeField] float groundDistance = 0.4f;
 
     [Header("Crouch Parameters")]
     [SerializeField] float crouchHeight = 0.5f;
@@ -81,21 +69,23 @@ public class KeyboardMovement : MonoBehaviour
     float timer; // used to determine where the camera should be at given moment
     bool duringHeightLevelAnimation;
 
+    [Header("Zoom Feature")]
+    [SerializeField] float timeToZoom = 0.4f;
+    [SerializeField] float zoomFOV = 30f; // Target camera Field of View when zooming in
+    float defaultFOV;
+    Coroutine zoomRoutine;
+
     [Header("Physics")]
-    [SerializeField]
-    Vector3 velocity;
+    [SerializeField] Vector3 velocity;
     float acceleration;
     const float GRAVITY = 9.81f;
 
     [Header("Controls")]
-    [SerializeField]
-    KeyCode sprintKey = KeyCode.LeftShift;
-    [SerializeField]
-    KeyCode jumpKey = KeyCode.Space;
-    [SerializeField]
-    KeyCode crouchKey = KeyCode.C;
-    [SerializeField]
-    KeyCode walkKey = KeyCode.LeftControl;
+    [SerializeField] KeyCode sprintKey = KeyCode.LeftShift;
+    [SerializeField] KeyCode jumpKey = KeyCode.Space;
+    [SerializeField] KeyCode crouchKey = KeyCode.C;
+    [SerializeField] KeyCode walkKey = KeyCode.LeftControl;
+    [SerializeField] KeyCode zoomKey = KeyCode.Mouse1;
     void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -103,6 +93,7 @@ public class KeyboardMovement : MonoBehaviour
         groundCheck = transform.Find("GroundCheck");
         camera = GetComponentInChildren<Camera>();
         defaultYPos = camera.transform.localPosition.y;
+        defaultFOV = camera.fieldOfView;
     }
 
     // Update is called once per frame
@@ -115,7 +106,33 @@ public class KeyboardMovement : MonoBehaviour
             HandleJump();
             HandleCrouch();
             if (useHeadbob) CreateHeadbobEffect();
+            if (canZoom) ZoomCamera();
             ApplyGravity();
+        }
+    }
+
+    private void ZoomCamera()
+    {
+        if (Input.GetKeyDown(zoomKey))
+        {
+            if (zoomRoutine != null)
+            {
+                StopCoroutine(zoomRoutine);
+                zoomRoutine = null;
+            }
+            // Start zooming in
+            zoomRoutine = StartCoroutine(ToggleCameraZoom(true));
+        }
+ 
+        if (Input.GetKeyUp(zoomKey))
+        {
+            if (zoomRoutine != null)
+            {
+                StopCoroutine(zoomRoutine);
+                zoomRoutine = null;
+            }
+            // Start zooming out
+            zoomRoutine = StartCoroutine(ToggleCameraZoom(false));
         }
     }
 
@@ -135,7 +152,7 @@ public class KeyboardMovement : MonoBehaviour
         {
             StartCoroutine(HeightLevel());
         }
-    } 
+    }
 
     private void MoveOnInput()
     {
@@ -252,5 +269,22 @@ public class KeyboardMovement : MonoBehaviour
 
         duringHeightLevelAnimation = false;
 
+    }
+
+    private IEnumerator ToggleCameraZoom(bool isZoomed)
+    {
+        float targetFOV = isZoomed ? zoomFOV : defaultFOV;
+        float startingFOV = camera.fieldOfView;
+        float timeElapsed = 0f;
+
+        while (timeElapsed < timeToZoom)
+        {
+            camera.fieldOfView = Mathf.Lerp(startingFOV, targetFOV, timeElapsed / timeToZoom);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        camera.fieldOfView = targetFOV;
+        zoomRoutine = null;
     }
 }
