@@ -51447,6 +51447,7 @@ GameObject:
   - component: {fileID: 1637185964}
   - component: {fileID: 1637185963}
   - component: {fileID: 1637185962}
+  - component: {fileID: 1637185965}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -51473,7 +51474,6 @@ MonoBehaviour:
   canCrouch: 1
   canWalk: 1
   useHeadbob: 1
-  canZoom: 1
   canInteract: 1
   groundMask:
     serializedVersion: 2
@@ -51482,10 +51482,6 @@ MonoBehaviour:
   walkSpeed: 6
   runSpeed: 10
   sprintSpeed: 20
-  maxHealth: 100
-  timeBeforeRegenStarts: 3
-  healthRegenAmount: 1
-  healthRegenInterval: 0.1
   movementDirection: {x: 0, y: 0, z: 0}
   jumpHeight: 2
   groundDistance: 0.5
@@ -51509,8 +51505,6 @@ MonoBehaviour:
   interactionLayer:
     serializedVersion: 2
     m_Bits: 64
-  timeToZoom: 0.3
-  zoomFOV: 30
   velocity: {x: 0, y: 0, z: 0}
   fallWillHurtVelocity: 7
   fallTime: 0
@@ -51518,7 +51512,6 @@ MonoBehaviour:
   jumpKey: 32
   crouchKey: 99
   walkKey: 306
-  zoomKey: 324
   interactKey: 101
 --- !u!143 &1637185963
 CharacterController:
@@ -51556,6 +51549,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1637185965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637185961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e508cf487d19fa4e812dc5c66519420, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  timeBeforeRegenStarts: 3
+  healthRegenAmount: 1
+  healthRegenInterval: 0.1
 --- !u!43 &1651223781
 Mesh:
   m_ObjectHideFlags: 0
@@ -52966,6 +52975,7 @@ GameObject:
   - component: {fileID: 1769794329}
   - component: {fileID: 1769794328}
   - component: {fileID: 1769794327}
+  - component: {fileID: 1769794330}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -53056,6 +53066,22 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1769794330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769794325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 990550536abd0204fa6fe4ccc50edf62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canZoom: 1
+  zoomKey: 324
+  timeToZoom: 0.4
+  zoomFOV: 30
 --- !u!1 &1793003375
 GameObject:
   m_ObjectHideFlags: 0

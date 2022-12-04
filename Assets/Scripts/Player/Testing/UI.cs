@@ -10,14 +10,14 @@ public class UI : MonoBehaviour
 
     private void OnEnable()
     {
-        KeyboardMovement.OnDamage += UpdateHealth;
-        KeyboardMovement.OnHeal += UpdateHealth;
+        HealthSystem.OnDamage += UpdateHealth;
+        HealthSystem.OnHeal += UpdateHealth;
     }
 
     private void OnDisable()
     {
-        KeyboardMovement.OnDamage -= UpdateHealth;
-        KeyboardMovement.OnHeal -= UpdateHealth;
+        HealthSystem.OnDamage -= UpdateHealth;
+        HealthSystem.OnHeal -= UpdateHealth;
     }
 
     private void Start()

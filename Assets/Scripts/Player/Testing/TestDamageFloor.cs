@@ -9,7 +9,7 @@ public class TestDamageFloor : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            KeyboardMovement.OnDamageTaken(1);
+            HealthSystem.OnDamageTaken(1);
         }
     }
 }
