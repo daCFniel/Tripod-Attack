@@ -131,6 +131,10 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 1691693330}
     m_Modifications:
+    - target: {fileID: 1798639940425795148, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: wanderDistMax
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
       propertyPath: m_Name
       value: AIAgentAlien (1)
@@ -481,6 +485,10 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 1691693330}
     m_Modifications:
+    - target: {fileID: 1798639940425795148, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: wanderDistMax
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
       propertyPath: m_Name
       value: AIAgentAlien (2)
@@ -929,6 +937,11 @@ Transform:
   m_Father: {fileID: 1757372777}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1614607887 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+  m_PrefabInstance: {fileID: 1812218552}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1691693330 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8220422911579166958, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}
@@ -970,6 +983,73 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1812218552
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 2
+    m_TransformParent: {fileID: 1691693330}
+    m_Modifications:
+    - target: {fileID: 1798639940425795148, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: wanderDistMax
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_Name
+      value: AIAgentAlien (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -22.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173159, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: wanderDistMax
+      value: 25
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_AddedGameObjects: []
+  m_SourcePrefab: {fileID: 100100000, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
 --- !u!1001 &1971388930
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -978,6 +1058,10 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 1691693330}
     m_Modifications:
+    - target: {fileID: 1798639940425795148, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: wanderDistMax
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
       propertyPath: m_Name
       value: AIAgentAlien
@@ -1047,6 +1131,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 8220422911579166957, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}
+      propertyPath: chaserCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8220422911579166957, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}
       propertyPath: enemySpawnPosition
       value: 
       objectReference: {fileID: 534673059}
@@ -1109,4 +1197,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8220422911579166958, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}
       insertIndex: -1
       addedObject: {fileID: 818386379}
+    - targetCorrespondingSourceObject: {fileID: 8220422911579166958, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1614607887}
   m_SourcePrefab: {fileID: 100100000, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}

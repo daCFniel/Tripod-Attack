@@ -14,6 +14,8 @@ public class AIManager : MonoBehaviour
     public int chasersActive = 0;
 
     private GameObject[] chasers;
+    public float timeBetweenSpawns = 0.5f;
+    private float timeElapsed = 0.0f;
 
     private void Start()
     {
@@ -79,6 +81,10 @@ public class AIManager : MonoBehaviour
 
     private void SpawnChasers()
     {
+        timeElapsed += Time.deltaTime;
+
+        if (timeElapsed < timeBetweenSpawns) return;
+
         for (int i = 0; i < chaserCount; i++)
         { 
             GameObject enemy = chasers[i];
@@ -86,6 +92,8 @@ public class AIManager : MonoBehaviour
             if (enemy.activeInHierarchy == true) continue;
 
             SpawnEnemy(i);
+            timeElapsed = 0.0f;
+            break;
         }
     }
 
@@ -102,7 +110,9 @@ public class AIManager : MonoBehaviour
             child.GetComponent<PathFind>().startPos = playerPos;
             child.GetComponent<PathFind>().lastSeenPlayerPos = playerPos;
 
-            child.GetComponent<PathFind>().currentState = PathFind.State.WANDER;
+            if (child.GetComponent<PathFind>().currentState != PathFind.State.CHASE)
+                child.GetComponent<PathFind>().currentState = PathFind.State.WANDER;
+            
             child.GetComponent<PathFind>().timeSinceLastSeenPlayer = 0.0f;
             child.GetComponent<PathFind>().hasReachedInitialGoal = false;
         }
