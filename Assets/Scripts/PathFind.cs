@@ -22,6 +22,12 @@ public class PathFind : MonoBehaviour
 
     public float angleToSeePlayer = 25.0f;
     public float distanceToSeePlayer = 15.0f;
+    public float attackDistance = 2.0f;
+    public float attackTimeout = 1.25f; // This is from length of animation
+    private float currentAttackTimeout = 0.0f;
+
+    public AlienAnimator animator;
+
     public State currentState;
     private AIManager manager;
 
@@ -58,6 +64,8 @@ public class PathFind : MonoBehaviour
 
     void Update()
     {
+        // print(name + " is in state " + currentState.ToString());
+
         switch (currentState)
         {
             case State.WANDER:
@@ -72,6 +80,8 @@ public class PathFind : MonoBehaviour
             default:
                 break;
         }
+
+        currentAttackTimeout += Time.deltaTime;
     }
 
     private void state_return() {
@@ -90,6 +100,8 @@ public class PathFind : MonoBehaviour
             gameObject.SetActive(false);
             manager.chasersActive -= 1;
         }
+
+        HandleMovementAnim();
     }
 
 
@@ -111,7 +123,41 @@ public class PathFind : MonoBehaviour
         if (gameObject.CompareTag("EnemyChaser"))
         {
             timeSinceLastSeenPlayer = 0.0f;
+
+            if (CanAttackPlayer())
+            {
+                if (currentAttackTimeout >= attackTimeout)
+                {
+                    Attack();
+                }
+                
+            } else
+            {
+                HandleMovementAnim();
+            }
         }
+        else
+        {
+            HandleMovementAnim();
+        }
+    }
+
+    private bool CanAttackPlayer()
+    {
+        Vector2 vec2Player = new Vector2(player.transform.position.x, player.transform.position.z);
+        Vector2 vec2Us = new Vector2(transform.position.x, transform.position.z);
+
+        float distance = Vector2.Distance(vec2Player, vec2Us);
+
+        return (distance <= attackDistance);
+    }
+
+    private void Attack()
+    {
+        // attack player!
+        print("i am attacking the player");
+        PlayAnimation("Attack_1", true);
+        currentAttackTimeout = 0.0f;
     }
 
     private void wander() {
@@ -146,6 +192,22 @@ public class PathFind : MonoBehaviour
                     currentState = State.RETURN;
                 }
             }
+        }
+
+        HandleMovementAnim();
+    }
+
+    private void HandleMovementAnim()
+    {
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+
+        if (agent.velocity.magnitude <= 0.025)
+        {
+            PlayAnimation("Fight_Idle_1", false);
+        }
+        else
+        {
+            PlayAnimation("Walk_Cycle_1", false);
         }
     }
 
@@ -194,5 +256,18 @@ public class PathFind : MonoBehaviour
         goal = valid.position;
 
         timeCountdown = Random.Range(timeRangeMin, timeRangeMax);
+    }
+
+    private void PlayAnimation(string animName, bool force)
+    {
+        if (animator == null) return;
+
+        if (!force)
+        {
+            animator.PlayAnim(animName);
+        } else
+        {
+            animator.animator.SetTrigger(animName);
+        }
     }
 }
