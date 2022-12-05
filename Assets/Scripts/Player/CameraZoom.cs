@@ -12,12 +12,12 @@ public class CameraZoom : MonoBehaviour
     [SerializeField] float zoomFOV = 30f; // Target camera Field of View when zooming in
     float defaultFOV;
     Coroutine zoomRoutine;
-    Camera camera;
+    Camera cameraComponent;
 
     private void Start()
     {
-        camera = GetComponent<Camera>();
-        defaultFOV = camera.fieldOfView;
+        cameraComponent = GetComponent<Camera>();
+        defaultFOV = cameraComponent.fieldOfView;
     }
 
 
@@ -57,17 +57,17 @@ public class CameraZoom : MonoBehaviour
     private IEnumerator ToggleCameraZoom(bool isZoomed)
     {
         float targetFOV = isZoomed ? zoomFOV : defaultFOV;
-        float startingFOV = camera.fieldOfView;
+        float startingFOV = cameraComponent.fieldOfView;
         float timeElapsed = 0f;
 
         while (timeElapsed < timeToZoom)
         {
-            camera.fieldOfView = Mathf.Lerp(startingFOV, targetFOV, timeElapsed / timeToZoom);
+            cameraComponent.fieldOfView = Mathf.Lerp(startingFOV, targetFOV, timeElapsed / timeToZoom);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
 
-        camera.fieldOfView = targetFOV;
+        cameraComponent.fieldOfView = targetFOV;
         zoomRoutine = null;
     }
 
