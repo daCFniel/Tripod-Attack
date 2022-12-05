@@ -11,17 +11,16 @@ public class CustomCharacterController : MonoBehaviour
 
     [Header("Functinal Options")]
     [SerializeField] bool isOnTheGround;
-    [SerializeField] bool canSprint = true;
     [SerializeField] bool canJump = true;
-    [SerializeField] bool canMove = true;
     [SerializeField] bool canCrouch = true;
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
     [SerializeField] bool canInteract = true;
     [SerializeField] bool WillSlideOnSlopes = true;
+    public bool CanSprint = true;
+    public bool CanMove = true;
 
     // Lambda fields
-    bool IsSprinting => canSprint && Input.GetKey(sprintKey);
     bool IsWalking => canWalk && Input.GetKey(walkKey);
     bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
     float MoveSpeed => IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? sprintSpeed : runSpeed;
@@ -29,12 +28,13 @@ public class CustomCharacterController : MonoBehaviour
     float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? sprintBobSpeed : runBobSpeed;
     float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
     bool ShouldInteract => Input.GetKeyDown(interactKey) && currentInteractable != null;
+    public bool IsSprinting => CanSprint && Input.GetKey(sprintKey);
 
     [Header("Instances")]
     [SerializeField] LayerMask groundMask; // Control what objects the Physics.CheckSphere should check for
     Transform groundCheck;
-    UnityEngine.CharacterController controller;
-    Camera camera;
+    CharacterController controller;
+    Camera cameraComponent;
 
     [Header("Movement Parameters")]
     [SerializeField] float crouchSpeed = 4f;
@@ -43,6 +43,7 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] float sprintSpeed = 20f;
     [SerializeField] float slopeSpeed = 8f;
     [SerializeField] Vector3 movementDirection;
+    public Vector2 movementInput;
 
     [Header("Jump Parameters")]
     [SerializeField] float jumpHeight = 10f;
@@ -116,14 +117,14 @@ public class CustomCharacterController : MonoBehaviour
         controller = GetComponent<UnityEngine.CharacterController>();
         acceleration = -GRAVITY;
         groundCheck = transform.Find("GroundCheck");
-        camera = GetComponentInChildren<Camera>();
-        defaultYPos = camera.transform.localPosition.y;
+        cameraComponent = GetComponentInChildren<Camera>();
+        defaultYPos = cameraComponent.transform.localPosition.y;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (canMove)
+        if (CanMove)
         {
             CheckIsOnTheGround();
             MoveOnInput();
@@ -136,59 +137,10 @@ public class CustomCharacterController : MonoBehaviour
                 HandleInteractionsInput();
             }
             ApplyGravity();
-        }
-    }
-
-    // Perform an action after pressing an interaction key
-    private void HandleInteractionsInput()
-    {
-        if (ShouldInteract && Physics.Raycast(camera.ViewportPointToRay(interactionRayPoint), out _, interactionDistance, interactionLayer))
+        } else
         {
-            currentInteractable.OnInteract();
-        }
-    }
-
-    // Look for interactable objects
-    private void ProcessInteractions()
-    {
-        // Take into consideration all colliders when checking for interactable objects (To prevent interacting through objects)
-        if (Physics.Raycast(camera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance))
-        {
-            bool collidedWithInteractableLayer = hit.collider.gameObject.layer == Interactable.interactableLayerId;
-            // If its on Interactable layer and the character is not currently interacting (or is changing focus to other object next by)
-            if (collidedWithInteractableLayer && (currentInteractable == null || hit.collider.gameObject.GetInstanceID() != currentInteractable.GetInstanceID()))
-            {
-                // Try to get the object the ray collided with
-                hit.collider.TryGetComponent(out currentInteractable);
-
-                if (currentInteractable)
-                {
-                    currentInteractable.OnFocus();
-                }
-            }
-        } // Stop interacting
-        else if (currentInteractable)
-        {
-            currentInteractable.OnLoseFocus();
-            currentInteractable = null;
-        }
-    }
-
-    private void CreateHeadbobEffect()
-    {
-        // Check if the character is moving (abs because the movement direction can be negative)
-        if (Mathf.Abs(movementDirection.x) > 0.1f || Mathf.Abs(movementDirection.z) > 0.1f)
-        {
-            // Headbob disabled when the character is not standing on the ground
-            if (!isOnTheGround || duringHeightLevelAnimation) return;
-            timer += Time.deltaTime * BobSpeed;
-            float cameraTransitionY = defaultYPos + Mathf.Sin(timer) * BobAmount;
-            camera.transform.localPosition = new Vector3(camera.transform.localPosition.x, cameraTransitionY, camera.transform.localPosition.z);
-        }
-        // Reset the camera y position to default when the character stops moving
-        else if (defaultYPos != camera.transform.localPosition.y)
-        {
-            StartCoroutine(HeightLevel());
+            movementDirection = Vector3.zero;
+            movementInput = Vector2.zero;
         }
     }
 
@@ -197,7 +149,7 @@ public class CustomCharacterController : MonoBehaviour
         // Get vertical/horizontal keyboard input (can be 1- or 1)
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
-
+        movementInput = new(x, z);
         // Move the character based on the keyboard input
         Vector3 movementVector = transform.right * x + transform.forward * z;
         // Slope sliding
@@ -268,13 +220,63 @@ public class CustomCharacterController : MonoBehaviour
             velocity.y = -2f;
         }
     }
+    private void CreateHeadbobEffect()
+    {
+        // Check if the character is moving (abs because the movement direction can be negative)
+        if (Mathf.Abs(movementDirection.x) > 0.1f || Mathf.Abs(movementDirection.z) > 0.1f)
+        {
+            // Headbob disabled when the character is not standing on the ground
+            if (!isOnTheGround || duringHeightLevelAnimation) return;
+            timer += Time.deltaTime * BobSpeed;
+            float cameraTransitionY = defaultYPos + Mathf.Sin(timer) * BobAmount;
+            cameraComponent.transform.localPosition = new Vector3(cameraComponent.transform.localPosition.x, cameraTransitionY, cameraComponent.transform.localPosition.z);
+        }
+        // Reset the camera y position to default when the character stops moving
+        else if (defaultYPos != cameraComponent.transform.localPosition.y)
+        {
+            StartCoroutine(HeightLevel());
+        }
+    }
 
+    // Perform an action after pressing an interaction key
+    private void HandleInteractionsInput()
+    {
+        if (ShouldInteract && Physics.Raycast(cameraComponent.ViewportPointToRay(interactionRayPoint), out _, interactionDistance, interactionLayer))
+        {
+            currentInteractable.OnInteract();
+        }
+    }
 
+    // Look for interactable objects
+    private void ProcessInteractions()
+    {
+        // Take into consideration all colliders when checking for interactable objects (To prevent interacting through objects)
+        if (Physics.Raycast(cameraComponent.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance))
+        {
+            bool collidedWithInteractableLayer = hit.collider.gameObject.layer == Interactable.interactableLayerId;
+            // If its on Interactable layer and the character is not currently interacting (or is changing focus to other object next by)
+            if (collidedWithInteractableLayer && (currentInteractable == null || hit.collider.gameObject.GetInstanceID() != currentInteractable.GetInstanceID()))
+            {
+                // Try to get the object the ray collided with
+                hit.collider.TryGetComponent(out currentInteractable);
+
+                if (currentInteractable)
+                {
+                    currentInteractable.OnFocus();
+                }
+            }
+        } // Stop interacting
+        else if (currentInteractable)
+        {
+            currentInteractable.OnLoseFocus();
+            currentInteractable = null;
+        }
+    }
     private IEnumerator CrouchStand()
     {
         // Check for collison above the character while crouching
         // Break the Coroutine if the object is detected (character cannot stand up)
-        if (IsCrouching && Physics.Raycast(camera.transform.position, Vector3.up, 1f))
+        if (IsCrouching && Physics.Raycast(cameraComponent.transform.position, Vector3.up, 1f))
             yield break;
 
         duringCrouchAnimation = true;
@@ -317,14 +319,14 @@ public class CustomCharacterController : MonoBehaviour
         duringHeightLevelAnimation = true;
 
         float timeElapsed = 0;
-        Vector3 currentHeight = camera.transform.localPosition;
+        Vector3 currentHeight = cameraComponent.transform.localPosition;
         Vector3 targetHeight;
 
-        targetHeight = new Vector3(camera.transform.localPosition.x, defaultYPos, camera.transform.localPosition.z);
+        targetHeight = new Vector3(cameraComponent.transform.localPosition.x, defaultYPos, cameraComponent.transform.localPosition.z);
 
         while (timeElapsed < timeToReturnCamera)
         {
-            camera.transform.localPosition = Vector3.Lerp(currentHeight, targetHeight, timeElapsed / timeToReturnCamera);
+            cameraComponent.transform.localPosition = Vector3.Lerp(currentHeight, targetHeight, timeElapsed / timeToReturnCamera);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
