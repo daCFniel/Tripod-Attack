@@ -18,6 +18,7 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
     [SerializeField] bool canInteract = true;
+    [SerializeField] bool WillSlideOnSlopes = true;
 
     // Lambda fields
     bool IsSprinting => canSprint && Input.GetKey(sprintKey);
@@ -40,15 +41,12 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] float walkSpeed = 6f;
     [SerializeField] float runSpeed = 10f;
     [SerializeField] float sprintSpeed = 20f;
-
-    [SerializeField]
-    Vector3 movementDirection;
+    [SerializeField] float slopeSpeed = 8f;
+    [SerializeField] Vector3 movementDirection;
 
     [Header("Jump Parameters")]
     [SerializeField] float jumpHeight = 10f;
     [SerializeField] float groundDistance = 0.4f;
-    [SerializeField] float sloapLimit = 100f;
-    float defaultSloap;
 
     [Header("Crouch Parameters")]
     [SerializeField] float crouchHeight = 0.5f;
@@ -94,6 +92,25 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] KeyCode walkKey = KeyCode.LeftControl;
     [SerializeField] KeyCode interactKey = KeyCode.E;
 
+    // SLIDING
+    Vector3 hitPointNormal; // Normal position of the surface the character is currently walking on (i.e. angle of the floor)
+
+    private bool IsSlopeSliding
+    {
+        get
+        {
+            if (isOnTheGround && Physics.Raycast(transform.position, Vector3.down, out RaycastHit slopeHit, 2f))
+            {
+                hitPointNormal = slopeHit.normal;
+                return Vector3.Angle(hitPointNormal, Vector3.up) > controller.slopeLimit;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
     void Awake()
     {
         controller = GetComponent<UnityEngine.CharacterController>();
@@ -101,7 +118,6 @@ public class CustomCharacterController : MonoBehaviour
         groundCheck = transform.Find("GroundCheck");
         camera = GetComponentInChildren<Camera>();
         defaultYPos = camera.transform.localPosition.y;
-        defaultSloap = controller.slopeLimit;
     }
 
     // Update is called once per frame
@@ -184,6 +200,8 @@ public class CustomCharacterController : MonoBehaviour
 
         // Move the character based on the keyboard input
         Vector3 movementVector = transform.right * x + transform.forward * z;
+        // Slope sliding
+        if (WillSlideOnSlopes && IsSlopeSliding) movementVector += new Vector3(hitPointNormal.x, -hitPointNormal.y, hitPointNormal.z) * slopeSpeed;
         controller.Move(MoveSpeed * Time.deltaTime * movementVector.normalized);
         movementDirection = movementVector;
     }
@@ -240,19 +258,14 @@ public class CustomCharacterController : MonoBehaviour
     private void CheckIsOnTheGround()
     {
         // Check wether the character is touching the ground
-        //isOnTheGround = controller.isGrounded;
+        isOnTheGround = controller.isGrounded;
         // Custom ground checking
-        isOnTheGround = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        //isOnTheGround = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         // Reset the y velocity (falling) when the playing is touching the ground
         if (isOnTheGround && velocity.y < 0)
         {
-            controller.slopeLimit = defaultSloap;
             velocity.y = -2f;
-        }
-        else // Change the slope when jumping
-        {
-            controller.slopeLimit = sloapLimit;
         }
     }
 
