@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 3123313921601173157}
   - component: {fileID: 3123313921601173156}
   - component: {fileID: 3123313921601173158}
-  - component: {fileID: 3123313921601173159}
   - component: {fileID: 3274671407549639794}
   - component: {fileID: 5403268083823492069}
   - component: {fileID: 1739120057483890860}
+  - component: {fileID: 1798639940425795148}
   m_Layer: 10
   m_Name: AIAgentAlien
   m_TagString: EnemyScout
@@ -76,25 +76,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3123313921601173159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3123313921601173155}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fedf7d6a442cce41addd008b0370c1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  goal: {x: 0, y: 0, z: 0}
-  spotlight: {fileID: 3362874587244252209}
-  wanderDistMax: 250
-  timeRangeMin: 7
-  timeRangeMax: 15
-  angleToSeePlayer: 25
-  distanceToSeePlayer: 15
 --- !u!54 &3274671407549639794
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -144,6 +125,32 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1798639940425795148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3123313921601173155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45307e8044737444b8203ad33b947993, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goal: {x: 0, y: 0, z: 0}
+  startPos: {x: 0, y: 0, z: 0}
+  wanderDistMax: 250
+  timeRangeMin: 15
+  timeRangeMax: 30
+  timeSinceLastSeenPlayer: 0
+  chaserTimeoutUnseen: 10
+  hasReachedInitialGoal: 0
+  lastSeenPlayerPos: {x: 0, y: 0, z: 0}
+  angleToSeePlayer: 25
+  distanceToSeePlayer: 15
+  animator: {fileID: 0}
+  currentState: 0
+  spotlight: {fileID: 3362874587244252209}
 --- !u!1 &6489339014118714671
 GameObject:
   m_ObjectHideFlags: 0

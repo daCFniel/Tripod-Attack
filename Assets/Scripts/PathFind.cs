@@ -6,14 +6,13 @@ using UnityEngine.AI;
 public class PathFind : MonoBehaviour
 {
     public Vector3 goal;
-    private GameObject player;
-    public Light spotlight;
+    protected GameObject player;
 
     public Vector3 startPos;
     public float wanderDistMax = 250.0f;
     public float timeRangeMin = 15.0f;
     public float timeRangeMax = 30.0f;
-    private float timeCountdown;
+    protected float timeCountdown;
 
     public float timeSinceLastSeenPlayer = 0.0f;
     public float chaserTimeoutUnseen = 10.0f;
@@ -22,14 +21,11 @@ public class PathFind : MonoBehaviour
 
     public float angleToSeePlayer = 25.0f;
     public float distanceToSeePlayer = 15.0f;
-    public float attackDistance = 2.0f;
-    public float attackTimeout = 1.25f; // This is from length of animation
-    private float currentAttackTimeout = 0.0f;
 
     public AlienAnimator animator;
 
     public State currentState;
-    private AIManager manager;
+    protected AIManager manager;
 
     public enum State
     {
@@ -69,98 +65,21 @@ public class PathFind : MonoBehaviour
         switch (currentState)
         {
             case State.WANDER:
-                wander();
+                Wander();
                 break;
             case State.CHASE:
-                chase();
+                Chase();
                 break;
             case State.RETURN:
-                state_return();
+                StateReturn();
                 break;
             default:
                 break;
         }
-
-        currentAttackTimeout += Time.deltaTime;
     }
 
-    private void state_return() {
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
-
-        goal = manager.enemySpawnPosition.transform.position;
-        agent.destination = goal;
-        hasReachedInitialGoal = false;
-
-        if (CanSeePlayer())
-        {
-            currentState = State.CHASE;
-        }
-
-        if (Vector3.Distance(transform.position, manager.enemySpawnPosition.transform.position) <= 5.0f) {
-            gameObject.SetActive(false);
-            manager.chasersActive -= 1;
-        }
-
-        HandleMovementAnim();
-    }
-
-
-    private void chase() {
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
-
-        timeCountdown = Random.Range(timeRangeMin, timeRangeMax);
-        goal = player.transform.position;
-        agent.destination = goal;
-
-        manager.SendChasers(player.transform.position);
-
-        if (!RaycastHitPlayer()) {
-            currentState = State.WANDER;
-        }
-
-        if (spotlight) spotlight.color = Color.red;
-
-        if (gameObject.CompareTag("EnemyChaser"))
-        {
-            timeSinceLastSeenPlayer = 0.0f;
-
-            if (CanAttackPlayer())
-            {
-                if (currentAttackTimeout >= attackTimeout)
-                {
-                    Attack();
-                }
-                
-            } else
-            {
-                HandleMovementAnim();
-            }
-        }
-        else
-        {
-            HandleMovementAnim();
-        }
-    }
-
-    private bool CanAttackPlayer()
-    {
-        Vector2 vec2Player = new Vector2(player.transform.position.x, player.transform.position.z);
-        Vector2 vec2Us = new Vector2(transform.position.x, transform.position.z);
-
-        float distance = Vector2.Distance(vec2Player, vec2Us);
-
-        return (distance <= attackDistance);
-    }
-
-    private void Attack()
-    {
-        // attack player!
-        print("i am attacking the player");
-        PlayAnimation("Attack_1", true);
-        currentAttackTimeout = 0.0f;
-    }
-
-    private void wander() {
+    protected virtual void Attack() { }
+    protected virtual void Wander() {
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
         agent.destination = goal;
 
@@ -174,30 +93,26 @@ public class PathFind : MonoBehaviour
         {
             currentState = State.CHASE;
         }
-
-        if (spotlight) spotlight.color = Color.white;
-
-        if (gameObject.CompareTag("EnemyChaser"))
-        {
-            if (Vector3.Distance(transform.position, lastSeenPlayerPos) <= 10.0f)
-            {
-                hasReachedInitialGoal = true;
-            }
-
-            if (hasReachedInitialGoal)
-            {
-                timeSinceLastSeenPlayer += Time.deltaTime;
-                if (timeSinceLastSeenPlayer >= chaserTimeoutUnseen)
-                {
-                    currentState = State.RETURN;
-                }
-            }
-        }
-
-        HandleMovementAnim();
     }
 
-    private void HandleMovementAnim()
+    protected virtual void Chase() {
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+
+        timeCountdown = Random.Range(timeRangeMin, timeRangeMax);
+        goal = player.transform.position;
+        agent.destination = goal;
+
+        manager.SendChasers(player.transform.position);
+
+        if (!RaycastHitPlayer())
+        {
+            currentState = State.WANDER;
+        }
+    }
+
+    protected virtual void StateReturn() { }
+
+    protected void HandleMovementAnim()
     {
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
 
@@ -211,7 +126,7 @@ public class PathFind : MonoBehaviour
         }
     }
 
-    private bool CanSeePlayer()
+    protected bool CanSeePlayer()
     {
         Vector2 vec2goal = new Vector2(goal.x, goal.z);
         Vector2 vec2Player = new Vector2(player.transform.position.x, player.transform.position.z);
@@ -234,7 +149,7 @@ public class PathFind : MonoBehaviour
         return false;
     }
 
-    private bool RaycastHitPlayer() {
+    protected bool RaycastHitPlayer() {
         LayerMask layers = ~(1 << gameObject.layer);
         RaycastHit hit;
 
@@ -247,7 +162,7 @@ public class PathFind : MonoBehaviour
         return false;
     }
 
-    private void NewGoal()
+    protected void NewGoal()
     {
         NavMeshHit valid;
 
@@ -258,7 +173,7 @@ public class PathFind : MonoBehaviour
         timeCountdown = Random.Range(timeRangeMin, timeRangeMax);
     }
 
-    private void PlayAnimation(string animName, bool force)
+    protected void PlayAnimation(string animName, bool force)
     {
         if (animator == null) return;
 

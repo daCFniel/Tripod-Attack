@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 3123313921601173157}
   - component: {fileID: 3123313921601173156}
   - component: {fileID: 3123313921601173158}
-  - component: {fileID: 3123313921601173159}
   - component: {fileID: 3274671407549639794}
+  - component: {fileID: 8100282519673235882}
   m_Layer: 10
   m_Name: AIAgentChaser
   m_TagString: EnemyChaser
@@ -72,33 +72,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3123313921601173159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3123313921601173155}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fedf7d6a442cce41addd008b0370c1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  goal: {x: 0, y: 0, z: 0}
-  spotlight: {fileID: 0}
-  startPos: {x: 0, y: 0, z: 0}
-  wanderDistMax: 150
-  timeRangeMin: 7
-  timeRangeMax: 15
-  timeSinceLastSeenPlayer: 0
-  chaserTimeoutUnseen: 30
-  hasReachedInitialGoal: 0
-  lastSeenPlayerPos: {x: 0, y: 0, z: 0}
-  angleToSeePlayer: 25
-  distanceToSeePlayer: 15
-  attackDistance: 2
-  animator: {fileID: 6383799748020742731}
-  currentState: 0
 --- !u!54 &3274671407549639794
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -115,6 +88,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8100282519673235882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3123313921601173155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5548f732a9f6224db348b962a46d84b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goal: {x: 0, y: 0, z: 0}
+  startPos: {x: 0, y: 0, z: 0}
+  wanderDistMax: 150
+  timeRangeMin: 15
+  timeRangeMax: 30
+  timeSinceLastSeenPlayer: 0
+  chaserTimeoutUnseen: 30
+  hasReachedInitialGoal: 0
+  lastSeenPlayerPos: {x: 0, y: 0, z: 0}
+  angleToSeePlayer: 25
+  distanceToSeePlayer: 15
+  animator: {fileID: 6383799748020742731}
+  currentState: 0
+  attackDistance: 2
+  attackTimeout: 1.25
 --- !u!1001 &8823851811612964035
 PrefabInstance:
   m_ObjectHideFlags: 0
