@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 /// <summary>
 /// Daniel Bielech db662 - COMP6100
@@ -15,7 +13,6 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] bool canCrouch = true;
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
-    [SerializeField] bool canInteract = true;
     [SerializeField] bool WillSlideOnSlopes = true;
     public bool CanSprint = true;
     public bool CanMove = true;
@@ -27,7 +24,6 @@ public class CustomCharacterController : MonoBehaviour
     bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
     float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? sprintBobSpeed : runBobSpeed;
     float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
-    bool ShouldInteract => Input.GetKeyDown(interactKey) && currentInteractable != null;
     public bool IsSprinting => CanSprint && Input.GetKey(sprintKey);
 
     [Header("Instances")]
@@ -72,12 +68,6 @@ public class CustomCharacterController : MonoBehaviour
     float timer; // used to determine where the camera should be at given moment
     bool duringHeightLevelAnimation;
 
-    [Header("Interactions")]
-    [SerializeField] Vector3 interactionRayPoint = default;
-    [SerializeField] float interactionDistance = default;
-    [SerializeField] LayerMask interactionLayer = default;
-    Interactable currentInteractable;
-
     [Header("Physics")]
     [SerializeField] Vector3 velocity;
     [SerializeField] float fallWillHurtVelocity = 5f;
@@ -91,7 +81,6 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
     [SerializeField] KeyCode crouchKey = KeyCode.C;
     [SerializeField] KeyCode walkKey = KeyCode.LeftControl;
-    [SerializeField] KeyCode interactKey = KeyCode.E;
 
     // SLIDING
     Vector3 hitPointNormal; // Normal position of the surface the character is currently walking on (i.e. angle of the floor)
@@ -131,11 +120,6 @@ public class CustomCharacterController : MonoBehaviour
             HandleJump();
             HandleCrouch();
             if (useHeadbob) CreateHeadbobEffect();
-            if (canInteract)
-            {
-                ProcessInteractions();
-                HandleInteractionsInput();
-            }
             ApplyGravity();
         } else
         {
@@ -238,40 +222,6 @@ public class CustomCharacterController : MonoBehaviour
         }
     }
 
-    // Perform an action after pressing an interaction key
-    private void HandleInteractionsInput()
-    {
-        if (ShouldInteract && Physics.Raycast(cameraComponent.ViewportPointToRay(interactionRayPoint), out _, interactionDistance, interactionLayer))
-        {
-            currentInteractable.OnInteract();
-        }
-    }
-
-    // Look for interactable objects
-    private void ProcessInteractions()
-    {
-        // Take into consideration all colliders when checking for interactable objects (To prevent interacting through objects)
-        if (Physics.Raycast(cameraComponent.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance))
-        {
-            bool collidedWithInteractableLayer = hit.collider.gameObject.layer == Interactable.interactableLayerId;
-            // If its on Interactable layer and the character is not currently interacting (or is changing focus to other object next by)
-            if (collidedWithInteractableLayer && (currentInteractable == null || hit.collider.gameObject.GetInstanceID() != currentInteractable.GetInstanceID()))
-            {
-                // Try to get the object the ray collided with
-                hit.collider.TryGetComponent(out currentInteractable);
-
-                if (currentInteractable)
-                {
-                    currentInteractable.OnFocus();
-                }
-            }
-        } // Stop interacting
-        else if (currentInteractable)
-        {
-            currentInteractable.OnLoseFocus();
-            currentInteractable = null;
-        }
-    }
     private IEnumerator CrouchStand()
     {
         // Check for collison above the character while crouching
