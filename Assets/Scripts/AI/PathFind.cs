@@ -50,7 +50,7 @@ public class PathFind : MonoBehaviour
         NewGoal();
     }
 
-    private void OnEnable()
+    public virtual void OnEnable()
     {
         timeSinceLastSeenPlayer = 0.0f;
         hasReachedInitialGoal = false;
@@ -100,7 +100,8 @@ public class PathFind : MonoBehaviour
 
         timeCountdown = Random.Range(timeRangeMin, timeRangeMax);
         goal = player.transform.position;
-        agent.destination = goal;
+
+        if (agent.enabled) agent.destination = goal;
 
         manager.SendChasers(player.transform.position);
 
