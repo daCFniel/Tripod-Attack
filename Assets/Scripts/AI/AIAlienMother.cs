@@ -14,7 +14,7 @@ public class AIAlienMother : MonoBehaviour
     public float movementSpeed = 1.0f;
 
     public float timeBetweenMovement = 1.0f;
-    public float viewDistanceToSpotPlayer = 20.0f;
+    public float distanceToSeePlayer = 20.0f;
     private float currentTime = 0.0f;
     public bool hasReachedTarget = false;
 
@@ -32,7 +32,15 @@ public class AIAlienMother : MonoBehaviour
         manager = GameObject.FindGameObjectsWithTag("AIManager")[0].GetComponent<AIManager>();
         mainLightDefaultRot = mainLight.transform.localRotation;
 
+        transform.position = currentWaypoint.transform.position;
+
         MoveToNewWaypoint();
+    }
+
+    private void ResetLighting()
+    {
+        mainLight.transform.localRotation = mainLightDefaultRot;
+        mainLight.GetComponent<Light>().color = Color.white;
     }
 
     private void Update()
@@ -40,15 +48,20 @@ public class AIAlienMother : MonoBehaviour
         currentTime += Time.deltaTime;
 
         // If player is too close, spot them.
-        if (Vector3.Distance(transform.position, player.transform.position) <= viewDistanceToSpotPlayer)
+        if (Vector3.Distance(transform.position, player.transform.position) <= distanceToSeePlayer)
         {
-            manager.SendChasers(player.transform.position);
-            mainLight.transform.LookAt(player.transform);
-            mainLight.GetComponent<Light>().color = Color.red;
+            if (RaycastHitPlayer())
+            {
+                manager.SendChasers(player.transform.position);
+                mainLight.transform.LookAt(player.transform);
+                mainLight.GetComponent<Light>().color = Color.red;
+            } else
+            {
+                ResetLighting();
+            }
         } else
         {
-            mainLight.transform.localRotation = mainLightDefaultRot;
-            mainLight.GetComponent<Light>().color = Color.white;
+            ResetLighting();
         }
 
         if (Vector3.Distance(transform.position, targetWaypoint.transform.position) <= distanceToReach)
@@ -81,5 +94,21 @@ public class AIAlienMother : MonoBehaviour
     {
         hasReachedTarget = false;
         targetWaypoint = currentWaypoint.connections[Random.Range(0, currentWaypoint.connections.Length)];
+    }
+
+    protected bool RaycastHitPlayer()
+    {
+        LayerMask layers = ~(1 << gameObject.layer);
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, player.transform.position - transform.position, out hit, distanceToSeePlayer + 1.0f, layers))
+        {
+            if (hit.collider.gameObject.tag == "Player")
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

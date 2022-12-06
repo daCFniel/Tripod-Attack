@@ -497,7 +497,7 @@ GameObject:
   - component: {fileID: 640897686296018424}
   - component: {fileID: 640897686296018425}
   - component: {fileID: 2842061379740105502}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Alien
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -597,7 +597,7 @@ MonoBehaviour:
   distanceToReach: 0.5
   movementSpeed: 5.5
   timeBetweenMovement: 1
-  viewDistanceToSpotPlayer: 35
+  distanceToSeePlayer: 35
   hasReachedTarget: 0
   mainLight: {fileID: 2542281697212245914}
 --- !u!1 &640897685677185827
