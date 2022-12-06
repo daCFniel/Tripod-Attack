@@ -43,6 +43,20 @@ public class AIAlienMother : MonoBehaviour
         mainLight.GetComponent<Light>().color = Color.white;
     }
 
+    private void TurnTowardsPlayer()
+    {
+        Vector2 vec2Player = new Vector2(player.transform.position.x, player.transform.position.z);
+        Vector2 vec2Us = new Vector2(transform.position.x, transform.position.z);
+
+        float angle = Vector2.SignedAngle(vec2Us, vec2Us - vec2Player);
+
+        transform.rotation = Quaternion.Euler(new Vector3(
+            0,
+            -angle - 90,
+            0
+        ));
+    }
+
     private void Update()
     {
         currentTime += Time.deltaTime;
@@ -55,6 +69,11 @@ public class AIAlienMother : MonoBehaviour
                 manager.SendChasers(player.transform.position);
                 mainLight.transform.LookAt(player.transform);
                 mainLight.GetComponent<Light>().color = Color.red;
+                animator.SetBool("IsMoving", false);
+
+                TurnTowardsPlayer();
+
+                return;
             } else
             {
                 ResetLighting();
