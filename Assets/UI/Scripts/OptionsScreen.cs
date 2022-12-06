@@ -167,6 +167,7 @@ public class OptionsScreen : MonoBehaviour
         PlayerPrefs.SetFloat("SFXVol", sfxSlider.value);    // used to remember user's previous settings/selections
     }
 }
+
 // Class controlling the resolution settings.
 [System.Serializable]
 public class ResItem
