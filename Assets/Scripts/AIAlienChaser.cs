@@ -9,6 +9,27 @@ public class AIAlienChaser : PathFind
     public float attackTimeout = 1.25f; // This is from length of animation
     private float currentAttackTimeout = 0.0f;
 
+    public float timeBetweenJumps = 10.0f;
+    private float timeSinceLastJump = 0.0f;
+    public bool isJumping = false;
+
+    public float jumpForceForward = 15.0f;
+    public float jumpForceUpward = 7.5f;
+
+    private void Tick()
+    {
+        currentAttackTimeout += Time.deltaTime;
+        timeSinceLastJump += Time.deltaTime;
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+
+        currentAttackTimeout = 0.0f;
+        timeSinceLastJump = timeBetweenJumps;
+    }
+
     protected override void Wander()
     {
         base.Wander();
@@ -28,7 +49,7 @@ public class AIAlienChaser : PathFind
         }
 
         HandleMovementAnim();
-        currentAttackTimeout += Time.deltaTime;
+        Tick();
     }
 
     protected override void Chase()
@@ -49,7 +70,34 @@ public class AIAlienChaser : PathFind
         {
             HandleMovementAnim();
         }
-        currentAttackTimeout += Time.deltaTime;
+
+        if (timeSinceLastJump >= timeBetweenJumps && !isJumping)
+        {
+            Jump();
+        }
+
+        Tick();
+    }
+
+    private void Jump()
+    {
+        print("Jumping!");
+
+        PlayAnimation("Attack_4", true);
+
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        Rigidbody rb = GetComponent<Rigidbody>();
+        agent.ResetPath();
+        agent.enabled = false;
+
+        rb.isKinematic = false;
+        rb.useGravity = true;
+
+        rb.AddForce((player.transform.position - this.transform.position).normalized * jumpForceForward, ForceMode.Impulse);
+        rb.AddForce(Vector3.up * jumpForceUpward, ForceMode.Impulse);
+
+        timeSinceLastJump = 0.0f;
+        isJumping = true;
     }
 
     protected override void StateReturn()
@@ -72,7 +120,7 @@ public class AIAlienChaser : PathFind
         }
 
         HandleMovementAnim();
-        currentAttackTimeout += Time.deltaTime;
+        Tick();
     }
 
     protected override void Attack()
@@ -91,5 +139,21 @@ public class AIAlienChaser : PathFind
         float distance = Vector2.Distance(vec2Player, vec2Us);
 
         return (distance <= attackDistance);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isJumping)
+        {
+            print("Landed!");
+            isJumping = false;
+
+            NavMeshAgent agent = GetComponent<NavMeshAgent>();
+            agent.enabled = true;
+
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
     }
 }
