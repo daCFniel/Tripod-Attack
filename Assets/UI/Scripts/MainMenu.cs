@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
     public string firstLevel;
+    public GameObject loadingScreen;
     public GameObject optionsScreen;
     public GameObject creditsScreen;
 
@@ -27,11 +28,17 @@ public class MainMenu : MonoBehaviour
         
     }
 
-    // Function for starting the game via the 'START' button
     public void startGame()
     {
-        SceneManager.LoadScene(firstLevel);
+        loadingScreen.SetActive(true);
         Debug.Log("Loading Game...");
+    }
+
+    // Function for starting the game via the 'BEGIN...' button
+    public void loadGame()
+    {
+        SceneManager.LoadScene(firstLevel);
+        Debug.Log("Starting Game...");
     }
 
     // Function for opening the options via the 'OPTIONS' button
