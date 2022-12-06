@@ -51855,6 +51855,8 @@ GameObject:
   - component: {fileID: 1637185963}
   - component: {fileID: 1637185962}
   - component: {fileID: 1637185965}
+  - component: {fileID: 1637185966}
+  - component: {fileID: 1637185967}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -51875,14 +51877,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isOnTheGround: 0
-  canSprint: 1
   canJump: 1
-  canMove: 1
   canCrouch: 1
   canWalk: 1
   useHeadbob: 1
-  canInteract: 1
   WillSlideOnSlopes: 1
+  CanSprint: 1
+  CanMove: 1
   groundMask:
     serializedVersion: 2
     m_Bits: 8
@@ -51890,8 +51891,10 @@ MonoBehaviour:
   walkSpeed: 6
   runSpeed: 10
   sprintSpeed: 20
+  currentSprintSpeed: 20
   slopeSpeed: 2
   movementDirection: {x: 0, y: 0, z: 0}
+  movementInput: {x: 0, y: 0}
   jumpHeight: 2
   groundDistance: 0.5
   crouchHeight: 0.5
@@ -51906,13 +51909,9 @@ MonoBehaviour:
   runBobSpeed: 10
   runBobAmount: 0.05
   sprintBobSpeed: 30
+  currentSprintBobSpeed: 30
   sprintBobAmount: 0.15
   timeToReturnCamera: 0.1
-  interactionRayPoint: {x: 0.5, y: 0.5, z: 0}
-  interactionDistance: 2
-  interactionLayer:
-    serializedVersion: 2
-    m_Bits: 64
   velocity: {x: 0, y: 0, z: 0}
   fallWillHurtVelocity: 7
   fallTime: 0
@@ -51920,7 +51919,6 @@ MonoBehaviour:
   jumpKey: 32
   crouchKey: 99
   walkKey: 306
-  interactKey: 101
 --- !u!143 &1637185963
 CharacterController:
   m_ObjectHideFlags: 0
@@ -51973,6 +51971,42 @@ MonoBehaviour:
   timeBeforeRegenStarts: 3
   healthRegenAmount: 1
   healthRegenInterval: 0.1
+--- !u!114 &1637185966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637185961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0803b15a4a1c7940a031eed734a17ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useStamina: 1
+  staminaUseMultiplier: 20
+  timeBeforeRegenStarts: 5
+  staminaRegenAmount: 1
+  staminaRegenInterval: 0.1
+--- !u!114 &1637185967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637185961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e3640441ad33664295185afb8196889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canInteract: 1
+  interactKey: 101
+  interactionRayPoint: {x: 0.5, y: 0.5, z: 0}
+  interactionDistance: 2
+  interactionLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!43 &1651223781
 Mesh:
   m_ObjectHideFlags: 0
@@ -53451,6 +53485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthText: {fileID: 1275186558}
+  staminaText: {fileID: 1701954884}
 --- !u!1 &1716277370
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,11 +8,11 @@ public class StaminaSystem : MonoBehaviour
 {
     [Header("Stamina Parameters")]
     [SerializeField] bool  useStamina = true;
-    [SerializeField] float maxStamina = 100f;
     [SerializeField] float staminaUseMultiplier = 5f;
     [SerializeField] float timeBeforeRegenStarts = 5f;
     [SerializeField] float staminaRegenAmount = 2f;
     [SerializeField] float staminaRegenInterval = 0.1f;
+    public static float maxStamina = 100f;
     float currentStamina;
     Coroutine regenStamina;
     public static Action<float> OnStaminaChange;

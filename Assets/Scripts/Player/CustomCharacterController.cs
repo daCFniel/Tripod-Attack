@@ -20,9 +20,9 @@ public class CustomCharacterController : MonoBehaviour
     // Lambda fields
     bool IsWalking => canWalk && Input.GetKey(walkKey);
     bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
-    float MoveSpeed => IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? sprintSpeed : runSpeed;
+    float MoveSpeed => IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? currentSprintSpeed : runSpeed;
     bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
-    float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? sprintBobSpeed : runBobSpeed;
+    float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? currentSprintBobSpeed : runBobSpeed;
     float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
     public bool IsSprinting => CanSprint && Input.GetKey(sprintKey);
 
@@ -37,6 +37,7 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] float walkSpeed = 6f;
     [SerializeField] float runSpeed = 10f;
     [SerializeField] float sprintSpeed = 20f;
+    [SerializeField] float currentSprintSpeed = 20f;
     [SerializeField] float slopeSpeed = 8f;
     [SerializeField] Vector3 movementDirection;
     public Vector2 movementInput;
@@ -59,9 +60,10 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] float crouchBobAmount = 0.025f;
     [SerializeField] float walkBobSpeed = 10f;
     [SerializeField] float walkBobAmount = 0.05f;
-    [SerializeField] float runBobSpeed = 10f;
+    [SerializeField] float runBobSpeed = 15f;
     [SerializeField] float runBobAmount = 0.05f;
-    [SerializeField] float sprintBobSpeed = 15f;
+    [SerializeField] float sprintBobSpeed = 30f;
+    [SerializeField] float currentSprintBobSpeed = 30f;
     [SerializeField] float sprintBobAmount = 0.1f;
     [SerializeField] float timeToReturnCamera = 0.1f;
     float defaultYPos = 0; // camera position
@@ -99,6 +101,16 @@ public class CustomCharacterController : MonoBehaviour
                 return false;
             }
         }
+    }
+
+    private void OnEnable()
+    {
+        StaminaSystem.OnStaminaChange += GetTired;
+    }
+
+    private void OnDisable()
+    {
+        StaminaSystem.OnStaminaChange -= GetTired;
     }
 
     void Awake()
@@ -140,6 +152,15 @@ public class CustomCharacterController : MonoBehaviour
         if (WillSlideOnSlopes && IsSlopeSliding) movementVector += new Vector3(hitPointNormal.x, -hitPointNormal.y, hitPointNormal.z) * slopeSpeed;
         controller.Move(MoveSpeed * Time.deltaTime * movementVector.normalized);
         movementDirection = movementVector;
+    }
+
+    // Character is getting tired depending on the stamina level.
+    // The lower the stamina the slower the sprint is.
+    private void GetTired(float currentStamina)
+    {
+        float normalizedValue = Mathf.InverseLerp(0, StaminaSystem.maxStamina, currentStamina);
+        currentSprintSpeed = Mathf.Lerp(runSpeed, sprintSpeed, normalizedValue);
+        currentSprintBobSpeed = Mathf.Lerp(runBobSpeed, sprintBobSpeed, normalizedValue);
     }
 
     private void HandleJump()
