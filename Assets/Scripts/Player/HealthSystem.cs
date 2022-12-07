@@ -12,8 +12,16 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float timeBeforeRegenStarts = 3f;
     [SerializeField] float healthRegenAmount = 1f;
     [SerializeField] float healthRegenInterval = 0.1f;
+    [Header("Visuals")]
     [SerializeField] RawImage bloodBorderImage;
     [SerializeField] Image bloodSplashImage;
+    [Header("SFX")]
+    [SerializeField] AudioSource heartBeat;
+    [SerializeField] AudioSource pain;
+    [SerializeField] float painSoundTime; 
+    [SerializeField] float maxPainVolume;
+    bool painCoroutineStarted;
+
     float currentHealth;
     Coroutine regenHealth;
     public static Action<float> OnDamageTaken;
@@ -34,6 +42,8 @@ public class HealthSystem : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        heartBeat.Play();
+        pain.Play();
     }
 
     private void ApplyDamage(float dmgAmount)
@@ -41,6 +51,7 @@ public class HealthSystem : MonoBehaviour
         currentHealth -= dmgAmount;
         OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
         ApplyBloodEffect();
+        HandleHeartBeat();
 
         if (currentHealth <= 0) KillPlayer();
         else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
@@ -60,6 +71,7 @@ public class HealthSystem : MonoBehaviour
             float splashAlpha = Mathf.Lerp(0, 1, normalizedValue);
             splashColor.a = splashAlpha;
             bloodSplashImage.color = splashColor;
+            if (!painCoroutineStarted) StartCoroutine(PlayPainSound(painSoundTime, maxPainVolume, painSoundTime));
         }
         borderColor.a = newAlpha;
         bloodBorderImage.color = borderColor;
@@ -74,6 +86,11 @@ public class HealthSystem : MonoBehaviour
         print("DEAD! YOU HAVE BEEN KILLED");
     }
 
+    private void HandleHeartBeat()
+    {
+        heartBeat.volume = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+    }
+
     private IEnumerator RegenHealth()
     {
         yield return new WaitForSeconds(timeBeforeRegenStarts);
@@ -84,6 +101,7 @@ public class HealthSystem : MonoBehaviour
             currentHealth += healthRegenAmount;
 
             ApplyBloodEffect();
+            HandleHeartBeat();
 
             // Prevent overhealing
             if (currentHealth > maxHealth) currentHealth = maxHealth;
@@ -93,5 +111,35 @@ public class HealthSystem : MonoBehaviour
         }
 
         regenHealth = null;
+    }
+
+    IEnumerator PlayPainSound(float changeTime, float maxVolume, float backTime)
+    {
+        painCoroutineStarted = true;
+        float timeElapsed = 0f;
+        float startingVolume = 0f;
+
+        while (timeElapsed < changeTime)
+        {
+            pain.volume = Mathf.Lerp(startingVolume, maxVolume, timeElapsed / changeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        pain.volume = maxVolume;
+
+        yield return new WaitForSeconds(backTime);
+
+        timeElapsed = 0f;
+        startingVolume = pain.volume;
+
+        while (timeElapsed < changeTime)
+        {
+            pain.volume = Mathf.Lerp(startingVolume, 0f, timeElapsed / changeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+        pain.volume = 0f;
+        painCoroutineStarted = false;
     }
 }
