@@ -45,19 +45,15 @@ public class AIAlienMother : MonoBehaviour
 
     private void TurnTowardsPlayer()
     {
-        Vector2 vec2Player = new Vector2(player.transform.position.x, player.transform.position.z);
-        Vector2 vec2Us = new Vector2(transform.position.x, transform.position.z);
-
-        float angle = Vector2.SignedAngle(vec2Us, vec2Us - vec2Player);
-
+        transform.LookAt(player.transform);
         transform.rotation = Quaternion.Euler(new Vector3(
             0,
-            -angle - 90,
+            transform.rotation.eulerAngles.y,
             0
         ));
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         currentTime += Time.deltaTime;
 
@@ -67,11 +63,14 @@ public class AIAlienMother : MonoBehaviour
             if (RaycastHitPlayer())
             {
                 manager.SendChasers(player.transform.position);
+
+                TurnTowardsPlayer();
+
                 mainLight.transform.LookAt(player.transform);
                 mainLight.GetComponent<Light>().color = Color.red;
                 animator.SetBool("IsMoving", false);
 
-                TurnTowardsPlayer();
+                GetComponent<AlienHealth>().PlayScreechAudio();
 
                 return;
             } else
@@ -115,16 +114,20 @@ public class AIAlienMother : MonoBehaviour
         targetWaypoint = currentWaypoint.connections[Random.Range(0, currentWaypoint.connections.Length)];
     }
 
-    protected bool RaycastHitPlayer()
-    {
+    protected bool RaycastHitPlayer() {
         LayerMask layers = ~(1 << gameObject.layer);
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, player.transform.position - transform.position, out hit, distanceToSeePlayer + 1.0f, layers))
-        {
-            if (hit.collider.gameObject.tag == "Player")
-            {
+        Vector3 raycastPosition = transform.position + (Vector3.up * 10.0f);
+        Vector3 playerPosition = player.transform.position + (Vector3.up * 0.0f);
+
+        Debug.DrawRay(raycastPosition, playerPosition - raycastPosition, Color.red);
+
+        if (Physics.Raycast(raycastPosition, playerPosition - raycastPosition, out hit, distanceToSeePlayer + 1.0f, layers)) {
+            if (hit.collider.gameObject.tag == "Player") {
                 return true;
+            } else {
+                // print("raycast hit: " + hit.collider.gameObject.name);
             }
         }
 

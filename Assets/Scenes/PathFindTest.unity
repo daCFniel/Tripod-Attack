@@ -139,6 +139,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AIAgentAlien (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -546,25 +550,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2616100623069678185, guid: 3887a31add7ba9c4cbf2fb4dc499e56a, type: 3}
   m_PrefabInstance: {fileID: 809258286}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &809258288 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9041258322964220700, guid: 3887a31add7ba9c4cbf2fb4dc499e56a, type: 3}
-  m_PrefabInstance: {fileID: 809258286}
-  m_PrefabAsset: {fileID: 0}
---- !u!136 &809258289
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 809258288}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 10
-  m_Height: 37.6
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &818386378
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -580,6 +565,10 @@ PrefabInstance:
     - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
       propertyPath: m_Name
       value: AIAgentAlien (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
       propertyPath: m_RootOrder
@@ -1338,7 +1327,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2203293005195585826, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.31
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2203293005195585826, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1539,6 +1528,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AIAgentAlien
       objectReference: {fileID: 0}
+    - target: {fileID: 3123313921601173155, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3123313921601173157, guid: 00b9ff011d772cc4f8566602ea070774, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1692,7 +1685,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8220422911579166957, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}
       propertyPath: chaserCount
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8220422911579166957, guid: 61c32616aca741b448ecc4082ae31c11, type: 3}
       propertyPath: enemySpawnPosition
