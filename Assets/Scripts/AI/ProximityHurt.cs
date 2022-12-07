@@ -18,7 +18,6 @@ public class ProximityHurt : MonoBehaviour
                 HealthSystem.OnDamageTaken(damageToInflict);
                 timeElapsed = 0.0f;
             }
-            
         }
     }
 
@@ -26,12 +25,14 @@ public class ProximityHurt : MonoBehaviour
         if (other.CompareTag("Player")) {
             isPlayerInside = true;
             timeElapsed = 0.0f;
+            GetComponent<AudioSource>().Play();
         }
     }
 
     private void OnTriggerExit(Collider other) {
         if (other.CompareTag("Player")) {
             isPlayerInside = false;
+            GetComponent<AudioSource>().Stop();
         }
     }
 }
