@@ -126,8 +126,11 @@ public class AIAlienChaser : PathFind
     protected override void Attack()
     {
         // attack player!
-        print("i am attacking the player");
+        // print("i am attacking the player");
         PlayAnimation("Attack_1", true);
+
+        HealthSystem.OnDamageTaken(25);
+
         currentAttackTimeout = 0.0f;
     }
 

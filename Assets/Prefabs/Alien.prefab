@@ -2301,6 +2301,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7409918438531155986}
+  - component: {fileID: 3052801191098534168}
+  - component: {fileID: 5393186590477657275}
   m_Layer: 0
   m_Name: TooCloseHitbox
   m_TagString: Untagged
@@ -2323,6 +2325,35 @@ Transform:
   m_Father: {fileID: 640897685677516605}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &3052801191098534168
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9041258322964220700}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 10
+  m_Height: 37.6
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5393186590477657275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9041258322964220700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 353eabd6697201fc9988e96104a5c935, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayerInside: 0
+  timeBetweenDamage: 0.5
+  damageToInflict: 10
 --- !u!1001 &640897685232310358
 PrefabInstance:
   m_ObjectHideFlags: 0
