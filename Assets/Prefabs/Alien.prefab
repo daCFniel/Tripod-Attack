@@ -596,9 +596,11 @@ MonoBehaviour:
   targetWaypoint: {fileID: 0}
   distanceToReach: 0.5
   movementSpeed: 5.5
+  sightTimeout: 0.5
   timeBetweenMovement: 1
   distanceToSeePlayer: 35
   hasReachedTarget: 0
+  rotationSpeed: 2.5
   mainLight: {fileID: 2542281697212245914}
 --- !u!1 &640897685677185827
 GameObject:

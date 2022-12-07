@@ -13,6 +13,9 @@ public class AIAlienMother : MonoBehaviour
     public float distanceToReach = 2.0f;
     public float movementSpeed = 1.0f;
 
+    public float sightTimeout = 0.5f;
+    private float currentSightTimeout = 0.0f;
+
     public float timeBetweenMovement = 1.0f;
     public float distanceToSeePlayer = 20.0f;
     private float currentTime = 0.0f;
@@ -21,6 +24,9 @@ public class AIAlienMother : MonoBehaviour
     private Animator animator;
     private GameObject player;
     private AIManager manager;
+
+    private float targetRotationY = 0.0f;
+    public float rotationSpeed = 5.0f;
 
     public GameObject mainLight;
     private Quaternion mainLightDefaultRot;
@@ -45,10 +51,23 @@ public class AIAlienMother : MonoBehaviour
 
     private void TurnTowardsPlayer()
     {
+        float oldY = transform.rotation.eulerAngles.y;
+
         transform.LookAt(player.transform);
+
+        targetRotationY = transform.rotation.eulerAngles.y;
+
         transform.rotation = Quaternion.Euler(new Vector3(
             0,
-            transform.rotation.eulerAngles.y,
+            oldY,
+            0
+        ));
+    }
+
+    private void SmoothRotation() {
+        transform.rotation = Quaternion.Euler(new Vector3(
+            0,
+            Mathf.LerpAngle(transform.rotation.eulerAngles.y, targetRotationY, rotationSpeed * Time.deltaTime),
             0
         ));
     }
@@ -63,8 +82,10 @@ public class AIAlienMother : MonoBehaviour
             if (RaycastHitPlayer())
             {
                 manager.SendChasers(player.transform.position);
+                currentSightTimeout = 0.0f;
 
                 TurnTowardsPlayer();
+                SmoothRotation();
 
                 mainLight.transform.LookAt(player.transform);
                 mainLight.GetComponent<Light>().color = Color.red;
@@ -73,14 +94,16 @@ public class AIAlienMother : MonoBehaviour
                 GetComponent<AlienHealth>().PlayScreechAudio();
 
                 return;
-            } else
-            {
-                ResetLighting();
             }
-        } else
-        {
-            ResetLighting();
         }
+
+        currentSightTimeout += Time.deltaTime;
+
+        if (currentSightTimeout <= sightTimeout) {
+            return;
+        }
+
+        ResetLighting();
 
         if (Vector3.Distance(transform.position, targetWaypoint.transform.position) <= distanceToReach)
         {
@@ -103,7 +126,19 @@ public class AIAlienMother : MonoBehaviour
             Vector3 movement = (targetWaypoint.transform.position - transform.position).normalized * movementSpeed * Time.deltaTime;
             transform.position += movement;
 
+
+            float oldY = transform.rotation.eulerAngles.y;
             transform.LookAt(targetWaypoint.transform);
+            targetRotationY = transform.rotation.eulerAngles.y;
+
+            transform.rotation = Quaternion.Euler(new Vector3(
+                0,
+                oldY,
+                0
+            ));
+
+            SmoothRotation();
+
             animator.SetBool("IsMoving", true);
         }
     }

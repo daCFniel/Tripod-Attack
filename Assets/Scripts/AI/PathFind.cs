@@ -81,7 +81,8 @@ public class PathFind : MonoBehaviour
     protected virtual void Attack() { }
     protected virtual void Wander() {
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        agent.destination = goal;
+
+        if (agent.enabled) agent.destination = goal;
 
         timeCountdown -= Time.deltaTime;
         if (timeCountdown <= 0 && hasReachedInitialGoal)
