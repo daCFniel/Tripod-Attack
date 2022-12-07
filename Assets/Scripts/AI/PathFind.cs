@@ -27,6 +27,8 @@ public class PathFind : MonoBehaviour
     public State currentState;
     protected AIManager manager;
 
+    public AudioSource spottedPlayerNoise;
+
     public enum State
     {
         WANDER,
@@ -92,7 +94,14 @@ public class PathFind : MonoBehaviour
 
         if (CanSeePlayer())
         {
+            PlaySpottedNoise();
             currentState = State.CHASE;
+        }
+    }
+
+    protected void PlaySpottedNoise() {
+        if (!spottedPlayerNoise.isPlaying) {
+            spottedPlayerNoise.Play();
         }
     }
 
