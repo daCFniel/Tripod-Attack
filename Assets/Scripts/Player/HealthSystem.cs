@@ -14,7 +14,7 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float healthRegenInterval = 0.1f;
     [Header("Visuals")]
     [SerializeField] RawImage bloodBorderImage;
-    [SerializeField] Image bloodSplashImage;
+    [SerializeField] RawImage bloodSplashImage;
     [Header("SFX")]
     [SerializeField] AudioSource heartBeat;
     [SerializeField] AudioSource pain;
@@ -48,6 +48,7 @@ public class HealthSystem : MonoBehaviour
 
     private void ApplyDamage(float dmgAmount)
     {
+        RotateBloodSplash();
         currentHealth -= dmgAmount;
         OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
         ApplyBloodEffect();
@@ -57,6 +58,15 @@ public class HealthSystem : MonoBehaviour
         else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
 
         regenHealth = StartCoroutine(RegenHealth()); //Start new hp regen timer
+    }
+
+    private void RotateBloodSplash()
+    {
+        if (currentHealth == maxHealth)
+        {
+            float randomRot = UnityEngine.Random.Range(0, 360);
+            bloodSplashImage.transform.rotation = Quaternion.Euler(0, 0, randomRot);
+        }
     }
 
     private void ApplyBloodEffect()
