@@ -40,7 +40,7 @@ Transform:
   - {fileID: 3930864832170953422}
   - {fileID: 8714768393554829260}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &3123313921601173156
 NavMeshAgent:
@@ -195,7 +195,7 @@ AudioSource:
   m_GameObject: {fileID: 4801696538765192737}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 5081474210987544560, guid: 616ed4eccdb6b82478b1e44c467d1829, type: 2}
   m_audioClip: {fileID: 8300000, guid: ddb7a97bbf7796737afa98382af68574, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -206,8 +206,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 800
+  MinDistance: 2
+  MaxDistance: 1000
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -417,7 +417,7 @@ AudioSource:
   m_GameObject: {fileID: 8823075901364416219}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 5081474210987544560, guid: 616ed4eccdb6b82478b1e44c467d1829, type: 2}
   m_audioClip: {fileID: 8300000, guid: 6579cdc36a582244ba6916725226ac55, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
