@@ -13,6 +13,9 @@ public class AIAlienMother : MonoBehaviour
     public float distanceToReach = 2.0f;
     public float movementSpeed = 1.0f;
 
+    public float sightTimeout = 0.5f;
+    private float currentSightTimeout = 0.0f;
+
     public float timeBetweenMovement = 1.0f;
     public float distanceToSeePlayer = 20.0f;
     private float currentTime = 0.0f;
@@ -21,6 +24,9 @@ public class AIAlienMother : MonoBehaviour
     private Animator animator;
     private GameObject player;
     private AIManager manager;
+
+    private float targetRotationY = 0.0f;
+    public float rotationSpeed = 5.0f;
 
     public GameObject mainLight;
     private Quaternion mainLightDefaultRot;
@@ -45,19 +51,28 @@ public class AIAlienMother : MonoBehaviour
 
     private void TurnTowardsPlayer()
     {
-        Vector2 vec2Player = new Vector2(player.transform.position.x, player.transform.position.z);
-        Vector2 vec2Us = new Vector2(transform.position.x, transform.position.z);
+        float oldY = transform.rotation.eulerAngles.y;
 
-        float angle = Vector2.SignedAngle(vec2Us, vec2Us - vec2Player);
+        transform.LookAt(player.transform);
+
+        targetRotationY = transform.rotation.eulerAngles.y;
 
         transform.rotation = Quaternion.Euler(new Vector3(
             0,
-            -angle - 90,
+            oldY,
             0
         ));
     }
 
-    private void Update()
+    private void SmoothRotation() {
+        transform.rotation = Quaternion.Euler(new Vector3(
+            0,
+            Mathf.LerpAngle(transform.rotation.eulerAngles.y, targetRotationY, rotationSpeed * Time.deltaTime),
+            0
+        ));
+    }
+
+    private void LateUpdate()
     {
         currentTime += Time.deltaTime;
 
@@ -67,21 +82,28 @@ public class AIAlienMother : MonoBehaviour
             if (RaycastHitPlayer())
             {
                 manager.SendChasers(player.transform.position);
+                currentSightTimeout = 0.0f;
+
+                TurnTowardsPlayer();
+                SmoothRotation();
+
                 mainLight.transform.LookAt(player.transform);
                 mainLight.GetComponent<Light>().color = Color.red;
                 animator.SetBool("IsMoving", false);
 
-                TurnTowardsPlayer();
+                GetComponent<AlienHealth>().PlayScreechAudio();
 
                 return;
-            } else
-            {
-                ResetLighting();
             }
-        } else
-        {
-            ResetLighting();
         }
+
+        currentSightTimeout += Time.deltaTime;
+
+        if (currentSightTimeout <= sightTimeout) {
+            return;
+        }
+
+        ResetLighting();
 
         if (Vector3.Distance(transform.position, targetWaypoint.transform.position) <= distanceToReach)
         {
@@ -104,7 +126,19 @@ public class AIAlienMother : MonoBehaviour
             Vector3 movement = (targetWaypoint.transform.position - transform.position).normalized * movementSpeed * Time.deltaTime;
             transform.position += movement;
 
+
+            float oldY = transform.rotation.eulerAngles.y;
             transform.LookAt(targetWaypoint.transform);
+            targetRotationY = transform.rotation.eulerAngles.y;
+
+            transform.rotation = Quaternion.Euler(new Vector3(
+                0,
+                oldY,
+                0
+            ));
+
+            SmoothRotation();
+
             animator.SetBool("IsMoving", true);
         }
     }
@@ -115,16 +149,20 @@ public class AIAlienMother : MonoBehaviour
         targetWaypoint = currentWaypoint.connections[Random.Range(0, currentWaypoint.connections.Length)];
     }
 
-    protected bool RaycastHitPlayer()
-    {
+    protected bool RaycastHitPlayer() {
         LayerMask layers = ~(1 << gameObject.layer);
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, player.transform.position - transform.position, out hit, distanceToSeePlayer + 1.0f, layers))
-        {
-            if (hit.collider.gameObject.tag == "Player")
-            {
+        Vector3 raycastPosition = transform.position + (Vector3.up * 10.0f);
+        Vector3 playerPosition = player.transform.position + (Vector3.up * 0.0f);
+
+        Debug.DrawRay(raycastPosition, playerPosition - raycastPosition, Color.red);
+
+        if (Physics.Raycast(raycastPosition, playerPosition - raycastPosition, out hit, distanceToSeePlayer + 1.0f, layers)) {
+            if (hit.collider.gameObject.tag == "Player") {
                 return true;
+            } else {
+                // print("raycast hit: " + hit.collider.gameObject.name);
             }
         }
 

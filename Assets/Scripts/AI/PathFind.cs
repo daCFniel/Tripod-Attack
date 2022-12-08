@@ -27,6 +27,8 @@ public class PathFind : MonoBehaviour
     public State currentState;
     protected AIManager manager;
 
+    public AudioSource spottedPlayerNoise;
+
     public enum State
     {
         WANDER,
@@ -58,7 +60,7 @@ public class PathFind : MonoBehaviour
         lastSeenPlayerPos = Vector3.zero;
     }
 
-    void Update()
+    void LateUpdate()
     {
         // print(name + " is in state " + currentState.ToString());
 
@@ -81,7 +83,8 @@ public class PathFind : MonoBehaviour
     protected virtual void Attack() { }
     protected virtual void Wander() {
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        agent.destination = goal;
+
+        if (agent.enabled) agent.destination = goal;
 
         timeCountdown -= Time.deltaTime;
         if (timeCountdown <= 0 && hasReachedInitialGoal)
@@ -91,7 +94,14 @@ public class PathFind : MonoBehaviour
 
         if (CanSeePlayer())
         {
+            PlaySpottedNoise();
             currentState = State.CHASE;
+        }
+    }
+
+    protected void PlaySpottedNoise() {
+        if (!spottedPlayerNoise.isPlaying) {
+            spottedPlayerNoise.Play();
         }
     }
 
@@ -145,7 +155,11 @@ public class PathFind : MonoBehaviour
             {
                 return true;
             }
+
+            // print(name + " raycast miss");
         }
+
+        // print(name + " wrong angle or dist");
 
         return false;
     }
@@ -154,9 +168,16 @@ public class PathFind : MonoBehaviour
         LayerMask layers = ~(1 << gameObject.layer);
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, player.transform.position - transform.position, out hit, distanceToSeePlayer + 1.0f, layers)) {
+        Vector3 raycastPosition = transform.position + (Vector3.up * 1.0f);
+        Vector3 playerPosition = player.transform.position + (Vector3.up * 0.0f);
+
+        Debug.DrawRay(raycastPosition, playerPosition - raycastPosition, Color.red);
+
+        if (Physics.Raycast(raycastPosition, playerPosition - raycastPosition, out hit, distanceToSeePlayer + 1.0f, layers)) {
             if (hit.collider.gameObject.tag == "Player") {
                 return true;
+            } else {
+                // print("raycast hit: " + hit.collider.gameObject.name);
             }
         }
 

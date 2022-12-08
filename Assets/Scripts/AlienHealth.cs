@@ -44,4 +44,10 @@ public class AlienHealth : MonoBehaviour
         alienScreech.PlayDelayed(5.0f);
         Destroy(GameObject.Find("Mr Grey"));
     }
+
+    public void PlayScreechAudio() {
+        if (!alienScreech.isPlaying) {
+            alienScreech.Play();
+        }
+    }
 }

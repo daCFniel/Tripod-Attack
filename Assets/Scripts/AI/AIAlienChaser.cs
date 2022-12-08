@@ -16,6 +16,8 @@ public class AIAlienChaser : PathFind
     public float jumpForceForward = 15.0f;
     public float jumpForceUpward = 7.5f;
 
+    public AudioSource attackAudio;
+
     private void Tick()
     {
         currentAttackTimeout += Time.deltaTime;
@@ -110,6 +112,7 @@ public class AIAlienChaser : PathFind
 
         if (CanSeePlayer())
         {
+            PlaySpottedNoise();
             currentState = State.CHASE;
         }
 
@@ -126,8 +129,13 @@ public class AIAlienChaser : PathFind
     protected override void Attack()
     {
         // attack player!
-        print("i am attacking the player");
+        // print("i am attacking the player");
         PlayAnimation("Attack_1", true);
+
+        attackAudio.Play();
+
+        HealthSystem.OnDamageTaken(25);
+
         currentAttackTimeout = 0.0f;
     }
 
