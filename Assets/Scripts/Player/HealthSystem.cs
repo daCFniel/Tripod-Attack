@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 /// <summary>
 /// Daniel Bielech db662 - COMP6100
@@ -16,6 +17,8 @@ public class HealthSystem : MonoBehaviour
     [Header("Visuals")]
     [SerializeField] RawImage bloodBorderImage;
     [SerializeField] RawImage bloodSplashImage;
+    [SerializeField] Camera cameraComponent;
+    PostProcessVolume playerPPV;
     [Header("SFX")]
     [SerializeField] AudioSource heartBeat;
     [SerializeField] AudioSource pain;
@@ -24,6 +27,8 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float painSoundTime; 
     [SerializeField] float maxPainVolume;
     [SerializeField] AudioSource currentSound;
+    float defaultSaturation;
+    ColorGrading colorGrading;
     bool painCoroutineStarted;
 
     float currentHealth;
@@ -45,6 +50,9 @@ public class HealthSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerPPV = cameraComponent.GetComponent<PostProcessVolume>();
+        playerPPV.profile.TryGetSettings(out colorGrading);
+        defaultSaturation = colorGrading.saturation.value;
         currentHealth = maxHealth;
         heartBeat.Play();
         pain.Play();
@@ -56,13 +64,26 @@ public class HealthSystem : MonoBehaviour
         currentHealth -= dmgAmount;
         OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
         PlayOnDamageSound();
-        ApplyBloodEffect();
-        HandleHeartBeat();
+        HandleHpLossEffects();
 
         if (currentHealth <= 0) KillPlayer();
         else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
 
         regenHealth = StartCoroutine(RegenHealth()); //Start new hp regen timer
+    }
+
+    private void HandleHpLossEffects()
+    {
+        ApplyBloodEffect();
+        ApplyGreyScaleEffect();
+        HandleHeartBeat();
+    }
+
+    private void ApplyGreyScaleEffect()
+    {
+        playerPPV.profile.TryGetSettings(out colorGrading);
+        float normalized = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        colorGrading.saturation.value = Mathf.Lerp(defaultSaturation, -100, normalized);
     }
 
     private void PlayOnDamageSound()
@@ -122,8 +143,7 @@ public class HealthSystem : MonoBehaviour
         {
             currentHealth += healthRegenAmount;
 
-            ApplyBloodEffect();
-            HandleHeartBeat();
+            HandleHpLossEffects();
 
             // Prevent overhealing
             if (currentHealth > maxHealth) currentHealth = maxHealth;
