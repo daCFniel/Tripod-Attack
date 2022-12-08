@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 /// <summary>
@@ -18,8 +19,11 @@ public class HealthSystem : MonoBehaviour
     [Header("SFX")]
     [SerializeField] AudioSource heartBeat;
     [SerializeField] AudioSource pain;
+    [SerializeField] List<AudioClip> onDamageSounds;
+    [SerializeField] AudioClip deathSound;
     [SerializeField] float painSoundTime; 
     [SerializeField] float maxPainVolume;
+    [SerializeField] AudioSource currentSound;
     bool painCoroutineStarted;
 
     float currentHealth;
@@ -51,6 +55,7 @@ public class HealthSystem : MonoBehaviour
         RotateBloodSplash();
         currentHealth -= dmgAmount;
         OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
+        PlayOnDamageSound();
         ApplyBloodEffect();
         HandleHeartBeat();
 
@@ -58,6 +63,13 @@ public class HealthSystem : MonoBehaviour
         else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
 
         regenHealth = StartCoroutine(RegenHealth()); //Start new hp regen timer
+    }
+
+    private void PlayOnDamageSound()
+    {
+        AudioClip clip = onDamageSounds[UnityEngine.Random.Range(0, onDamageSounds.Count)];
+        currentSound.clip = clip;
+        currentSound.Play();
     }
 
     private void RotateBloodSplash()

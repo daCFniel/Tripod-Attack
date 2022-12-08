@@ -204,7 +204,9 @@ public class CustomCharacterController : MonoBehaviour
         else if (falling)
         {
             // Hurt the player based on how long they fell
-            Debug.Log("Damage from fall: " + Mathf.Round(fallTime * 10));
+            float fallDamage = Mathf.Round(fallTime * 10);
+            Debug.Log("Damage from fall: " + fallDamage);
+            HealthSystem.OnDamageTaken(fallDamage);
 
             // Reset fall measurements
             falling = false;

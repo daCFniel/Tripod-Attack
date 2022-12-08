@@ -53253,6 +53253,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!82 &1824765636 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 840085206185673482, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+  m_PrefabInstance: {fileID: 2203293006815842446}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1869002811
 Mesh:
   m_ObjectHideFlags: 0
@@ -55481,6 +55486,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: deathSound
+      value: 
+      objectReference: {fileID: 8300000, guid: dbd95e8f17405cc4fa09422a24179b90, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: currentSound
+      value: 
+      objectReference: {fileID: 1824765636}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: painSoundTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
       propertyPath: bloodBorderImage
       value: 
       objectReference: {fileID: 6969743358133490257}
@@ -55488,6 +55505,58 @@ PrefabInstance:
       propertyPath: bloodSplashImage
       value: 
       objectReference: {fileID: 5815222117223034437}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: fallDamage.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: fallDamage.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 3f90a3a196b2fa648bdf3294668ef2a3, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: fallDamage.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 5877e07cc2769564584def6aac0215c2, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: fallDamage.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 0d6669ccd55576a4686b620e15a3ffe2, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: onDamageSounds.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: physicalDamage.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: onDamageSounds.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 3f90a3a196b2fa648bdf3294668ef2a3, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: onDamageSounds.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 5877e07cc2769564584def6aac0215c2, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: onDamageSounds.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 0d6669ccd55576a4686b620e15a3ffe2, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: onDamageSounds.Array.data[3]
+      value: 
+      objectReference: {fileID: 8300000, guid: ae0439272d8bcd44c961d69e33cbcf1f, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: onDamageSounds.Array.data[4]
+      value: 
+      objectReference: {fileID: 8300000, guid: 1fe21fb7e8eeb38448eb5f3de2949e96, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: physicalDamage.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: ae0439272d8bcd44c961d69e33cbcf1f, type: 3}
+    - target: {fileID: 2203293005195585827, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
+      propertyPath: physicalDamage.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 1fe21fb7e8eeb38448eb5f3de2949e96, type: 3}
     - target: {fileID: 2203293005195585831, guid: 45f4a085a9dd2b14d942af2a3ab105fb, type: 3}
       propertyPath: m_Name
       value: Player
