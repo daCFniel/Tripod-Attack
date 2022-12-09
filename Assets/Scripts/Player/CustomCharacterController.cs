@@ -7,7 +7,7 @@ using UnityEngine;
 public class CustomCharacterController : MonoBehaviour
 {
 
-    [Header("Functinal Options")]
+    [Header("Functional Options")]
     [SerializeField] bool isOnTheGround;
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
@@ -135,6 +135,8 @@ public class CustomCharacterController : MonoBehaviour
         groundCheck = transform.Find("GroundCheck");
         cameraComponent = GetComponentInChildren<Camera>();
         defaultYPos = cameraComponent.transform.localPosition.y;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
