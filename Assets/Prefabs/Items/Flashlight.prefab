@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4583455415704927434}
   - component: {fileID: 4583455415695397322}
   - component: {fileID: 4583455416802091368}
+  - component: {fileID: 4583455416259328798}
   m_Layer: 0
   m_Name: Flashlight
   m_TagString: Untagged
@@ -33,8 +34,8 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: -90}
 --- !u!33 &4583455415706058250
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -122,3 +123,16 @@ CapsuleCollider:
   m_Height: 0.23057182
   m_Direction: 1
   m_Center: {x: -0.0000000055879354, y: 0.00000047683716, z: 0}
+--- !u!114 &4583455416259328798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4583455415702659594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b02f5eeb465a80443a65246f948ca37e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData: {fileID: 11400000, guid: 888a5ff03e089464b9c1857ab868e1a8, type: 2}
