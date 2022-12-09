@@ -18,23 +18,27 @@ public class SwimmingMechanics : MonoBehaviour
     [SerializeField]
     private AudioClip submergingSound;
 
-    FirstPersonAIO player;
-    Rigidbody playerRB;
+    CustomCharacterController player;
     PostProcessProfile defaultProfile;
     GameObject airBubbles;
+
+    // Defaults
+    float defaultMouseSensX;
+    float defaultMouseSensY;
 
     // Start is called before the first frame update
     void Start()
     {
         isUnderWater = false;
         wasUnderWater = false;
-        player = transform.root.GetComponent<FirstPersonAIO>();
-        playerRB = transform.root.GetComponent<Rigidbody>();
+        player = GetComponent<CustomCharacterController>();
         RenderSettings.fogColor = new Color(0.2f, 0.4f, 0.8f, 0.5f);
         RenderSettings.fogDensity = 0.04f;
         defaultProfile = cameraObject.GetComponent<PostProcessVolume>().profile;
         airBubbles = GameObject.Find("Air Bubbles");
         airBubbles.SetActive(false);
+        defaultMouseSensX = cameraObject.GetComponent<MouseRotation>().mouseSensivityX;
+        defaultMouseSensY = cameraObject.GetComponent<MouseRotation>().mouseSensivityY;
     }
 
     // Update is called once per frame
@@ -45,27 +49,27 @@ public class SwimmingMechanics : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                playerRB.velocity = new Vector3(0, swimmingUpSpeed, 0);
+                player.velocity = new Vector3(0, swimmingUpSpeed, 0);
             }
             if (Input.GetKey(KeyCode.LeftControl))
             {
-                playerRB.velocity = new Vector3(0, -swimmingUpSpeed, 0);
+                player.velocity = new Vector3(0, -swimmingUpSpeed, 0);
             }
             if (Input.GetKeyUp(KeyCode.LeftShift))
             {
-                playerRB.velocity = Vector3.zero;
+                player.velocity = Vector3.zero;
             }
 
         }
         if (isUnderWater && !wasUnderWater)
         {
-            player.walkSpeed = 2;
-            player.sprintSpeed = 0;
-            player.mouseSensitivity = 5;
-            player.advanced.gravityMultiplier = 0.7f;
-            player.jumpPower = 1;
+            player.movementSpeedMultiplier /= 8;
+            cameraObject.GetComponent<MouseRotation>().mouseSensivityX /= 6;
+            cameraObject.GetComponent<MouseRotation>().mouseSensivityY /= 6;
             player.canJump = false;
-            player._crouchModifiers.useCrouch = false;
+            player.canCrouch = false;
+            player.CanSprint = false;
+            player.implyFallDamage = false;
             cameraObject.GetComponent<PostProcessVolume>().profile = underwaterEffect;
             airBubbles.SetActive(true);
             AudioSource.PlayClipAtPoint(submergingSound, transform.position);
@@ -73,13 +77,13 @@ public class SwimmingMechanics : MonoBehaviour
         }
         if (!isUnderWater && wasUnderWater)
         {
-            player.walkSpeed = 4;
-            player.sprintSpeed = 8;
-            player.mouseSensitivity = 10;
-            player.advanced.gravityMultiplier = 1.0f;
-            player.jumpPower = 5;
+            player.movementSpeedMultiplier = 1;
+            cameraObject.GetComponent<MouseRotation>().mouseSensivityX = defaultMouseSensX;
+            cameraObject.GetComponent<MouseRotation>().mouseSensivityY = defaultMouseSensY;
             player.canJump = true;
-            player._crouchModifiers.useCrouch = true;
+            player.canCrouch = true;
+            player.CanSprint = true;
+            player.implyFallDamage = true;
             cameraObject.GetComponent<PostProcessVolume>().profile = defaultProfile;
             airBubbles.SetActive(false);
             Destroy(GameObject.Find("One shot audio"));
