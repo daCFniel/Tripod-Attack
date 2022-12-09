@@ -14,6 +14,7 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
     [SerializeField] bool WillSlideOnSlopes = true;
+    [SerializeField] bool canUseFootsteps = true;
     public bool CanSprint = true;
     public bool CanMove = true;
 
@@ -46,6 +47,7 @@ public class CustomCharacterController : MonoBehaviour
     [Header("Jump Parameters")]
     [SerializeField] float jumpHeight = 10f;
     [SerializeField] float groundDistance = 0.4f;
+    [SerializeField] AudioClip jumpingSound;
 
     [Header("Crouch Parameters")]
     [SerializeField] float crouchHeight = 0.5f;
@@ -71,10 +73,22 @@ public class CustomCharacterController : MonoBehaviour
     float timer; // used to determine where the camera should be at given moment
     bool duringHeightLevelAnimation;
 
+    [Header("Footsteps SFX Parameters")]
+    [SerializeField] private float baseStepSpeed = 0.5f;
+    [SerializeField] private float crouchStepMultiplier = 1.5f;
+    [SerializeField] private float sprintStepMultiplier = 0.6f;
+    [SerializeField] private float walkStepMultiplier = 1.2f;
+    [SerializeField] private AudioSource footstepAudioSource = default;
+    [SerializeField] private AudioClip[] groundClips = default;
+    [SerializeField] private AudioClip[] grassClips = default;
+    private float footstepSoundTimer = 0f;
+    private float GetCurrentOffset => IsCrouching ? baseStepSpeed * crouchStepMultiplier : IsWalking ? baseStepSpeed * walkStepMultiplier : IsSprinting ? baseStepSpeed * sprintStepMultiplier : baseStepSpeed;
+
     [Header("Physics")]
     [SerializeField] Vector3 velocity;
     [SerializeField] float fallWillHurtVelocity = 5f;
     [SerializeField] float fallTime;
+    float zeroVelocity = -2f;
     bool falling;
     float acceleration;
     const float GRAVITY = 9.81f;
@@ -133,6 +147,7 @@ public class CustomCharacterController : MonoBehaviour
             HandleJump();
             HandleCrouch();
             if (useHeadbob) CreateHeadbobEffect();
+            if (canUseFootsteps) HandleFootsteps();
             ApplyGravity();
         }
     }
@@ -168,6 +183,7 @@ public class CustomCharacterController : MonoBehaviour
             // Calculate velocity needed to jump set height
             float v = Mathf.Sqrt(jumpHeight * GRAVITY * 2);
             velocity.y = v;
+            AudioSource.PlayClipAtPoint(jumpingSound, transform.position);
         }
     }
 
@@ -221,7 +237,7 @@ public class CustomCharacterController : MonoBehaviour
         // Reset the y velocity (falling) when the playing is touching the ground
         if (isOnTheGround && velocity.y < 0)
         {
-            velocity.y = -2f;
+            velocity.y = zeroVelocity;
         }
     }
     private void CreateHeadbobEffect()
@@ -239,6 +255,31 @@ public class CustomCharacterController : MonoBehaviour
         else if (defaultYPos != cameraComponent.transform.localPosition.y)
         {
             StartCoroutine(HeightLevel());
+        }
+    }
+
+    private void HandleFootsteps()
+    {
+        if (movementInput == Vector2.zero || velocity.y != zeroVelocity) return;
+
+        footstepSoundTimer -= Time.deltaTime;
+
+        if (footstepSoundTimer <= 0)
+        {
+            if (Physics.Raycast(cameraComponent.transform.position, Vector3.down, out RaycastHit hit, 4f))
+            {
+                switch (hit.collider.tag)
+                {
+                    case "Footsteps/Grass":
+                        footstepAudioSource.PlayOneShot(grassClips[Random.Range(0, grassClips.Length - 1)]);
+                        break;
+                    default:
+                        footstepAudioSource.PlayOneShot(groundClips[Random.Range(0, groundClips.Length - 1)]);
+                        break;
+                }
+            }
+
+            footstepSoundTimer = GetCurrentOffset;
         }
     }
 

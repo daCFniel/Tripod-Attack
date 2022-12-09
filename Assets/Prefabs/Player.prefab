@@ -201,6 +201,134 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1208457577
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1208457578}
+  - component: {fileID: 1208457579}
+  m_Layer: 0
+  m_Name: Footsteps
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1208457578
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208457577}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2203293006259359447}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &1208457579
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1208457577}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1351084861
 GameObject:
   m_ObjectHideFlags: 0
@@ -910,6 +1038,7 @@ MonoBehaviour:
   canWalk: 1
   useHeadbob: 1
   WillSlideOnSlopes: 1
+  canUseFootsteps: 1
   CanSprint: 1
   CanMove: 1
   groundMask:
@@ -926,6 +1055,7 @@ MonoBehaviour:
   movementSpeedMultiplier: 1
   jumpHeight: 2
   groundDistance: 0.5
+  jumpingSound: {fileID: 8300000, guid: cd187313703b63c42ad7ac8a27e396f9, type: 3}
   crouchHeight: 0.5
   standingHeight: 2
   timeToCrouch: 0.25
@@ -941,6 +1071,40 @@ MonoBehaviour:
   currentSprintBobSpeed: 30
   sprintBobAmount: 0.15
   timeToReturnCamera: 0.1
+  baseStepSpeed: 0.5
+  crouchStepMultiplier: 1.5
+  sprintStepMultiplier: 0.6
+  walkStepMultiplier: 1.2
+  footstepAudioSource: {fileID: 1208457579}
+  groundClips:
+  - {fileID: 8300000, guid: eec53751c4e79a7469fc34e774360128, type: 3}
+  - {fileID: 8300000, guid: dbe4405baeea2404ba3d422430b5fd3b, type: 3}
+  - {fileID: 8300000, guid: c8657061120b2da4fb645654b16201f6, type: 3}
+  - {fileID: 8300000, guid: 8ff53086d637af8478c1408b78b3dd05, type: 3}
+  - {fileID: 8300000, guid: b662731f964d624449b092d4198147de, type: 3}
+  - {fileID: 8300000, guid: 0609acde86b59a2458aaf135531f8756, type: 3}
+  - {fileID: 8300000, guid: fdfa07727ba18e146b0d737f16110ba5, type: 3}
+  - {fileID: 8300000, guid: e988fcf175fd1874db4f82c3b2d75db3, type: 3}
+  - {fileID: 8300000, guid: 98e005e2d5100484b88927d0803cb395, type: 3}
+  - {fileID: 8300000, guid: b3e9cdac26b78934197456d8199e30bc, type: 3}
+  - {fileID: 8300000, guid: ddc4973571f36404d95c23401b7d2f12, type: 3}
+  - {fileID: 8300000, guid: 8c9f76b14113ab640ab4b94535ad82e3, type: 3}
+  - {fileID: 8300000, guid: c87c3a812abe2fc4baa1fe54b4b77172, type: 3}
+  - {fileID: 8300000, guid: ee6a6c12e92b76347881600e494ea047, type: 3}
+  - {fileID: 8300000, guid: 06438add0bb42f846b7f1e2e0fcb78cb, type: 3}
+  - {fileID: 8300000, guid: 7dd1b75dd97f9af468c655f59ab900cc, type: 3}
+  - {fileID: 8300000, guid: 294e5ecef1c038f4eaaaad457cad5981, type: 3}
+  - {fileID: 8300000, guid: 0810c6bbffb6c0143984f3145f710f69, type: 3}
+  - {fileID: 8300000, guid: ebd381bfafa32b844a6954fc40a08c2e, type: 3}
+  - {fileID: 8300000, guid: 5c3c2c44515d6fe44a395faf0741edc0, type: 3}
+  grassClips:
+  - {fileID: 8300000, guid: 0609acde86b59a2458aaf135531f8756, type: 3}
+  - {fileID: 8300000, guid: fdfa07727ba18e146b0d737f16110ba5, type: 3}
+  - {fileID: 8300000, guid: e988fcf175fd1874db4f82c3b2d75db3, type: 3}
+  - {fileID: 8300000, guid: 98e005e2d5100484b88927d0803cb395, type: 3}
+  - {fileID: 8300000, guid: b3e9cdac26b78934197456d8199e30bc, type: 3}
+  - {fileID: 8300000, guid: ddc4973571f36404d95c23401b7d2f12, type: 3}
+  - {fileID: 8300000, guid: 8c9f76b14113ab640ab4b94535ad82e3, type: 3}
   velocity: {x: 0, y: 0, z: 0}
   fallWillHurtVelocity: 7
   fallTime: 0
@@ -1571,6 +1735,7 @@ Transform:
   - {fileID: 2203293005771972587}
   - {fileID: 6049068133493448759}
   - {fileID: 1203021646}
+  - {fileID: 1208457578}
   m_Father: {fileID: 2203293005195585826}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
