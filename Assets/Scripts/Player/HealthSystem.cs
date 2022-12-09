@@ -18,17 +18,21 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] RawImage bloodBorderImage;
     [SerializeField] RawImage bloodSplashImage;
     [SerializeField] Camera cameraComponent;
+    [SerializeField] float showDeathScreenAfter;
+    [SerializeField] GameObject deathScreen;
+    [SerializeField] float timeToFallOnDeath;
     PostProcessVolume playerPPV;
+    float defaultSaturation;
+    ColorGrading colorGrading;
     [Header("SFX")]
     [SerializeField] AudioSource heartBeat;
     [SerializeField] AudioSource pain;
     [SerializeField] List<AudioClip> onDamageSounds;
-    [SerializeField] AudioClip deathSound;
-    [SerializeField] float painSoundTime; 
+    [SerializeField] List<AudioClip> deathPianoSounds;
+    [SerializeField] AudioClip deathPlayerSound;
+    [SerializeField] float painSoundTime;
     [SerializeField] float maxPainVolume;
     [SerializeField] AudioSource currentSound;
-    float defaultSaturation;
-    ColorGrading colorGrading;
     bool painCoroutineStarted;
 
     float currentHealth;
@@ -36,6 +40,9 @@ public class HealthSystem : MonoBehaviour
     public static Action<float> OnDamageTaken;
     public static Action<float> OnDamage;
     public static Action<float> OnHeal;
+
+    CustomCharacterController controller;
+    CharacterController charController;
     private void OnEnable()
     {
         OnDamageTaken += ApplyDamage;
@@ -50,6 +57,8 @@ public class HealthSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        controller = GetComponent<CustomCharacterController>();
+        charController = GetComponent<CharacterController>();
         playerPPV = cameraComponent.GetComponent<PostProcessVolume>();
         playerPPV.profile.TryGetSettings(out colorGrading);
         defaultSaturation = colorGrading.saturation.value;
@@ -119,6 +128,10 @@ public class HealthSystem : MonoBehaviour
         borderColor.a = newAlpha;
         bloodBorderImage.color = borderColor;
     }
+    private void HandleHeartBeat()
+    {
+        heartBeat.volume = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+    }
     private void KillPlayer()
     {
         // Set health to 0 if overkill occured (negative hp)
@@ -127,12 +140,48 @@ public class HealthSystem : MonoBehaviour
         if (regenHealth != null) StopCoroutine(regenHealth);
 
         print("DEAD! YOU HAVE BEEN KILLED");
+
+        AudioClip clip = deathPianoSounds[UnityEngine.Random.Range(0, deathPianoSounds.Count)];
+        currentSound.clip = clip;
+        currentSound.Play();
+        AudioSource.PlayClipAtPoint(deathPlayerSound, controller.transform.position);
+
+        controller.CanSprint = false;
+        cameraComponent.GetComponent<MouseRotation>().mouseSensivityX /= 4;
+        cameraComponent.GetComponent<MouseRotation>().mouseSensivityY /= 4;
+        controller.movementSpeedMultiplier /= 5;
+        StartCoroutine(FallOnTheGround());
+        StartCoroutine(ShowDeathScreen());
+
+
     }
 
-    private void HandleHeartBeat()
+    private IEnumerator FallOnTheGround()
     {
-        heartBeat.volume = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        // Set target values
+        float timeElapsed = 0f;
+        float targetHeight = 0f;
+        float currentHeight = charController.height;
+        Vector3 targetCenter = new(0, 1.5f, 0);
+        Vector3 currentCenter = charController.center;
+
+        // Crouching loop
+        while (timeElapsed < timeToFallOnDeath)
+        {
+            charController.height = Mathf.Lerp(currentHeight, targetHeight, timeElapsed / timeToFallOnDeath);
+            // By lerping the center of the controller we enable smooth camera movement when crouching
+            charController.center = Vector3.Lerp(currentCenter, targetCenter, timeElapsed / timeToFallOnDeath);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
     }
+
+    private IEnumerator ShowDeathScreen()
+    {
+        yield return new WaitForSeconds(showDeathScreenAfter);
+        deathScreen.SetActive(true);
+    }
+
 
     private IEnumerator RegenHealth()
     {

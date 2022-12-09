@@ -20,7 +20,7 @@ public class CustomCharacterController : MonoBehaviour
     // Lambda fields
     bool IsWalking => canWalk && Input.GetKey(walkKey);
     bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
-    float MoveSpeed => IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? currentSprintSpeed : runSpeed;
+    float MoveSpeed => IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? currentSprintSpeed : runSpeed * movementSpeedMultiplier;
     bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
     float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? currentSprintBobSpeed : runBobSpeed;
     float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
@@ -41,6 +41,7 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] float slopeSpeed = 8f;
     [SerializeField] Vector3 movementDirection;
     public Vector2 movementInput;
+    public float movementSpeedMultiplier = 1;
 
     [Header("Jump Parameters")]
     [SerializeField] float jumpHeight = 10f;
@@ -115,7 +116,7 @@ public class CustomCharacterController : MonoBehaviour
 
     void Awake()
     {
-        controller = GetComponent<UnityEngine.CharacterController>();
+        controller = GetComponent<CharacterController>();
         acceleration = -GRAVITY;
         groundCheck = transform.Find("GroundCheck");
         cameraComponent = GetComponentInChildren<Camera>();
@@ -133,10 +134,6 @@ public class CustomCharacterController : MonoBehaviour
             HandleCrouch();
             if (useHeadbob) CreateHeadbobEffect();
             ApplyGravity();
-        } else
-        {
-            movementDirection = Vector3.zero;
-            movementInput = Vector2.zero;
         }
     }
 
