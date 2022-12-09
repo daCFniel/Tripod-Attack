@@ -30,11 +30,11 @@ Transform:
   m_GameObject: {fileID: 4583455415702659594}
   m_LocalRotation: {x: -0.5, y: 0.5, z: -0.5, w: 0.5}
   m_LocalPosition: {x: -4.7131386, y: -17.430521, z: -11.412621}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4583455415706058250
 MeshFilter:
@@ -119,8 +119,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.0365773
-  m_Height: 0.23057182
+  m_Radius: 0.14
+  m_Height: 0.41
   m_Direction: 1
   m_Center: {x: -0.0000000055879354, y: 0.00000047683716, z: 0}
 --- !u!114 &4583455416802091372
@@ -135,4 +135,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36c1f63ffe5b68546b4dad6ace5f135d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemData: {fileID: 11400000, guid: f0627efe65377504b8571d15eba743dc, type: 2}
+  itemData: {fileID: 11400000, guid: 4a3caaabe7cf9c548ac35bfd3492ef66, type: 2}

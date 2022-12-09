@@ -7,12 +7,12 @@ using UnityEngine;
 public class CustomCharacterController : MonoBehaviour
 {
 
-    [Header("Functinal Options")]
+    [Header("Functional Options")]
     [SerializeField] bool isOnTheGround;
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
     [SerializeField] bool WillSlideOnSlopes = true;
-    [SerializeField] bool canUseFootsteps = true;
+    public bool canUseFootsteps = true;
     public bool CanSprint = true;
     public bool CanMove = true;
     public bool canJump = true;
@@ -85,9 +85,10 @@ public class CustomCharacterController : MonoBehaviour
     private float GetCurrentOffset => IsCrouching ? baseStepSpeed * crouchStepMultiplier : IsWalking ? baseStepSpeed * walkStepMultiplier : IsSprinting ? baseStepSpeed * sprintStepMultiplier : baseStepSpeed;
 
     [Header("Physics")]
-    [SerializeField] Vector3 velocity;
     [SerializeField] float fallWillHurtVelocity = 5f;
     [SerializeField] float fallTime;
+    public Vector3 velocity;
+    public bool implyFallDamage;
     float zeroVelocity = -2f;
     bool falling;
     float acceleration;
@@ -201,7 +202,7 @@ public class CustomCharacterController : MonoBehaviour
         // Applying gravity physics to the movement
         velocity.y += acceleration * Time.deltaTime; // v = a * t
         controller.Move(velocity * Time.deltaTime);
-        HandleFallDamage();
+        if (implyFallDamage) HandleFallDamage();
     }
 
 

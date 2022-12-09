@@ -10,10 +10,11 @@ public class Score : MonoBehaviour
     void Start()
     {
         scoreText = GetComponent<TextMeshProUGUI>();
+        scoreText.text = "0";
     }
 
-    public void UpdateScoreText(Shooter shooter)
+    public void UpdateScoreText(int number)
     {
-        scoreText.text = shooter.numberOfCells.ToString();
+        scoreText.text = number.ToString();
     }
 }
