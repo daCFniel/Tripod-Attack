@@ -1521,6 +1521,7 @@ GameObject:
   - component: {fileID: 2203293005195585824}
   - component: {fileID: 2203293005195585825}
   - component: {fileID: 33024210}
+  - component: {fileID: 693743603433615163}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1549,7 +1550,7 @@ Transform:
   - {fileID: 2203293005103260142}
   - {fileID: 1197277162183434691}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &2203293005195585829
 CharacterController:
@@ -1756,6 +1757,19 @@ MonoBehaviour:
   underwaterEffect: {fileID: 11400000, guid: 39a837c5b1fb5a64cb45df78670fa197, type: 2}
   cameraObject: {fileID: 2203293005050330007}
   submergingSound: {fileID: 8300000, guid: e19b5e33cd9285a4d97b8cb8f78e78a5, type: 3}
+--- !u!114 &693743603433615163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2203293005195585831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fcffa4f17d39fe4090b3923345fa0b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shooter: {fileID: 7070319440486779264}
 --- !u!1 &2203293005540859378
 GameObject:
   m_ObjectHideFlags: 0
