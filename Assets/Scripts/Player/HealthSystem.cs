@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 /// <summary>
 /// Daniel Bielech db662 - COMP6100
@@ -12,14 +14,26 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float timeBeforeRegenStarts = 3f;
     [SerializeField] float healthRegenAmount = 1f;
     [SerializeField] float healthRegenInterval = 0.1f;
+    [SerializeField] float maxMovementPenalty = 0.5f;
     [Header("Visuals")]
     [SerializeField] RawImage bloodBorderImage;
-    [SerializeField] Image bloodSplashImage;
+    [SerializeField] RawImage bloodSplashImage;
+    [SerializeField] Camera cameraComponent;
+    [SerializeField] float showDeathScreenAfter;
+    [SerializeField] GameObject deathScreen;
+    [SerializeField] float timeToFallOnDeath;
+    PostProcessVolume playerPPV;
+    float defaultSaturation;
+    ColorGrading colorGrading;
     [Header("SFX")]
     [SerializeField] AudioSource heartBeat;
     [SerializeField] AudioSource pain;
-    [SerializeField] float painSoundTime; 
+    [SerializeField] List<AudioClip> onDamageSounds;
+    [SerializeField] List<AudioClip> deathPianoSounds;
+    [SerializeField] AudioClip deathPlayerSound;
+    [SerializeField] float painSoundTime;
     [SerializeField] float maxPainVolume;
+    [SerializeField] AudioSource currentSound;
     bool painCoroutineStarted;
 
     float currentHealth;
@@ -27,6 +41,9 @@ public class HealthSystem : MonoBehaviour
     public static Action<float> OnDamageTaken;
     public static Action<float> OnDamage;
     public static Action<float> OnHeal;
+
+    CustomCharacterController controller;
+    CharacterController charController;
     private void OnEnable()
     {
         OnDamageTaken += ApplyDamage;
@@ -41,6 +58,11 @@ public class HealthSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        controller = GetComponent<CustomCharacterController>();
+        charController = GetComponent<CharacterController>();
+        playerPPV = cameraComponent.GetComponent<PostProcessVolume>();
+        playerPPV.profile.TryGetSettings(out colorGrading);
+        defaultSaturation = colorGrading.saturation.value;
         currentHealth = maxHealth;
         heartBeat.Play();
         pain.Play();
@@ -48,15 +70,53 @@ public class HealthSystem : MonoBehaviour
 
     private void ApplyDamage(float dmgAmount)
     {
+        RotateBloodSplash();
         currentHealth -= dmgAmount;
         OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
-        ApplyBloodEffect();
-        HandleHeartBeat();
+        PlayOnDamageSound();
+        HandleHpLossEffects();
 
         if (currentHealth <= 0) KillPlayer();
         else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
 
         regenHealth = StartCoroutine(RegenHealth()); //Start new hp regen timer
+    }
+
+    private void HandleHpLossEffects()
+    {
+        ApplyBloodEffect();
+        ApplyGreyScaleEffect();
+        HandleHeartBeat();
+        HandleMovementPenalty();
+    }
+
+    private void HandleMovementPenalty()
+    {
+        float normalized = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        controller.movementSpeedMultiplier = Mathf.Lerp(1, maxMovementPenalty, normalized);
+    }
+
+    private void ApplyGreyScaleEffect()
+    {
+        playerPPV.profile.TryGetSettings(out colorGrading);
+        float normalized = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        colorGrading.saturation.value = Mathf.Lerp(defaultSaturation, -100, normalized);
+    }
+
+    private void PlayOnDamageSound()
+    {
+        AudioClip clip = onDamageSounds[UnityEngine.Random.Range(0, onDamageSounds.Count)];
+        currentSound.clip = clip;
+        currentSound.Play();
+    }
+
+    private void RotateBloodSplash()
+    {
+        if (currentHealth == maxHealth)
+        {
+            float randomRot = UnityEngine.Random.Range(0, 360);
+            bloodSplashImage.transform.rotation = Quaternion.Euler(0, 0, randomRot);
+        }
     }
 
     private void ApplyBloodEffect()
@@ -76,6 +136,10 @@ public class HealthSystem : MonoBehaviour
         borderColor.a = newAlpha;
         bloodBorderImage.color = borderColor;
     }
+    private void HandleHeartBeat()
+    {
+        heartBeat.volume = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+    }
     private void KillPlayer()
     {
         // Set health to 0 if overkill occured (negative hp)
@@ -84,12 +148,48 @@ public class HealthSystem : MonoBehaviour
         if (regenHealth != null) StopCoroutine(regenHealth);
 
         print("DEAD! YOU HAVE BEEN KILLED");
+
+        AudioClip clip = deathPianoSounds[UnityEngine.Random.Range(0, deathPianoSounds.Count)];
+        currentSound.clip = clip;
+        currentSound.Play();
+        AudioSource.PlayClipAtPoint(deathPlayerSound, controller.transform.position);
+
+        controller.CanSprint = false;
+        cameraComponent.GetComponent<MouseRotation>().mouseSensivityX /= 4;
+        cameraComponent.GetComponent<MouseRotation>().mouseSensivityY /= 4;
+        controller.movementSpeedMultiplier /= 5;
+        StartCoroutine(FallOnTheGround());
+        StartCoroutine(ShowDeathScreen());
+
+
     }
 
-    private void HandleHeartBeat()
+    private IEnumerator FallOnTheGround()
     {
-        heartBeat.volume = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        // Set target values
+        float timeElapsed = 0f;
+        float targetHeight = 0f;
+        float currentHeight = charController.height;
+        Vector3 targetCenter = new(0, 1.5f, 0);
+        Vector3 currentCenter = charController.center;
+
+        // Crouching loop
+        while (timeElapsed < timeToFallOnDeath)
+        {
+            charController.height = Mathf.Lerp(currentHeight, targetHeight, timeElapsed / timeToFallOnDeath);
+            // By lerping the center of the controller we enable smooth camera movement when crouching
+            charController.center = Vector3.Lerp(currentCenter, targetCenter, timeElapsed / timeToFallOnDeath);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
     }
+
+    private IEnumerator ShowDeathScreen()
+    {
+        yield return new WaitForSeconds(showDeathScreenAfter);
+        deathScreen.SetActive(true);
+    }
+
 
     private IEnumerator RegenHealth()
     {
@@ -100,8 +200,7 @@ public class HealthSystem : MonoBehaviour
         {
             currentHealth += healthRegenAmount;
 
-            ApplyBloodEffect();
-            HandleHeartBeat();
+            HandleHpLossEffects();
 
             // Prevent overhealing
             if (currentHealth > maxHealth) currentHealth = maxHealth;
