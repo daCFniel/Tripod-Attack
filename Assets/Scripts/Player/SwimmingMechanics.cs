@@ -19,6 +19,7 @@ public class SwimmingMechanics : MonoBehaviour
     private AudioClip submergingSound;
 
     CustomCharacterController player;
+    StaminaSystem stamina;
     PostProcessProfile defaultProfile;
     GameObject airBubbles;
 
@@ -32,6 +33,7 @@ public class SwimmingMechanics : MonoBehaviour
         isUnderWater = false;
         wasUnderWater = false;
         player = GetComponent<CustomCharacterController>();
+        stamina = GetComponent<StaminaSystem>();
         RenderSettings.fogColor = new Color(0.2f, 0.4f, 0.8f, 0.5f);
         RenderSettings.fogDensity = 0.04f;
         defaultProfile = cameraObject.GetComponent<PostProcessVolume>().profile;
@@ -63,6 +65,7 @@ public class SwimmingMechanics : MonoBehaviour
         }
         if (isUnderWater && !wasUnderWater)
         {
+            player.velocity = Vector3.zero;
             player.movementSpeedMultiplier /= 8;
             cameraObject.GetComponent<MouseRotation>().mouseSensivityX /= 6;
             cameraObject.GetComponent<MouseRotation>().mouseSensivityY /= 6;
@@ -70,6 +73,8 @@ public class SwimmingMechanics : MonoBehaviour
             player.canCrouch = false;
             player.CanSprint = false;
             player.implyFallDamage = false;
+            player.canUseFootsteps = false;
+            stamina.currentStamina = StaminaSystem.maxStamina;
             cameraObject.GetComponent<PostProcessVolume>().profile = underwaterEffect;
             airBubbles.SetActive(true);
             AudioSource.PlayClipAtPoint(submergingSound, transform.position);
@@ -77,6 +82,7 @@ public class SwimmingMechanics : MonoBehaviour
         }
         if (!isUnderWater && wasUnderWater)
         {
+            player.velocity = Vector3.zero;
             player.movementSpeedMultiplier = 1;
             cameraObject.GetComponent<MouseRotation>().mouseSensivityX = defaultMouseSensX;
             cameraObject.GetComponent<MouseRotation>().mouseSensivityY = defaultMouseSensY;
@@ -84,6 +90,7 @@ public class SwimmingMechanics : MonoBehaviour
             player.canCrouch = true;
             player.CanSprint = true;
             player.implyFallDamage = true;
+            player.canUseFootsteps = true;
             cameraObject.GetComponent<PostProcessVolume>().profile = defaultProfile;
             airBubbles.SetActive(false);
             Destroy(GameObject.Find("One shot audio"));

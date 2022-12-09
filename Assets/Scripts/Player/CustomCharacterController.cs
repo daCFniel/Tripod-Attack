@@ -7,12 +7,12 @@ using UnityEngine;
 public class CustomCharacterController : MonoBehaviour
 {
 
-    [Header("Functinal Options")]
+    [Header("Functional Options")]
     [SerializeField] bool isOnTheGround;
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
     [SerializeField] bool WillSlideOnSlopes = true;
-    [SerializeField] bool canUseFootsteps = true;
+    public bool canUseFootsteps = true;
     public bool CanSprint = true;
     public bool CanMove = true;
     public bool canJump = true;
