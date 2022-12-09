@@ -7542,6 +7542,7 @@ GameObject:
   - component: {fileID: 1743450371}
   - component: {fileID: 1743450370}
   - component: {fileID: 1743450374}
+  - component: {fileID: 1743450375}
   m_Layer: 5
   m_Name: Main Menu
   m_TagString: Untagged
@@ -7658,6 +7659,26 @@ MonoBehaviour:
   loadingScreen: {fileID: 1672186892}
   optionsScreen: {fileID: 874778033}
   creditsScreen: {fileID: 298639907}
+--- !u!95 &1743450375
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743450369}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1e28db121789ab549b75192c0c862a70, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &1756903559
 PrefabInstance:
   m_ObjectHideFlags: 0
