@@ -47,7 +47,7 @@ public class CustomCharacterController : MonoBehaviour
     [Header("Jump Parameters")]
     [SerializeField] float jumpHeight = 10f;
     [SerializeField] float groundDistance = 0.4f;
-    [SerializeField] AudioClip jumpingSound;
+    [SerializeField] private AudioSource jumpSound;
 
     [Header("Crouch Parameters")]
     [SerializeField] float crouchHeight = 0.5f;
@@ -183,7 +183,7 @@ public class CustomCharacterController : MonoBehaviour
             // Calculate velocity needed to jump set height
             float v = Mathf.Sqrt(jumpHeight * GRAVITY * 2);
             velocity.y = v;
-            AudioSource.PlayClipAtPoint(jumpingSound, transform.position);
+            jumpSound.Play();
         }
     }
 
