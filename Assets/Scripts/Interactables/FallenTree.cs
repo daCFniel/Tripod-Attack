@@ -4,6 +4,7 @@ public class FallenTree : Interactable
 {
     bool IsFocused = false;
     private Inventory inventory;
+    public AudioSource chopSound;
 
     private void Start()
     {
@@ -26,7 +27,9 @@ public class FallenTree : Interactable
 
         if (inventory.hasAxe)
         {
-            Destroy(this.gameObject);
+            chopSound.Play();
+            GetComponent<Collider>().enabled = false;
+            GameObject.Find("tree_1").SetActive(false);
         }
     }
 
