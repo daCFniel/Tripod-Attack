@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using UnityEngine.SceneManagement;
 /// <summary>
 /// Daniel Bielech db662 - COMP6100
 /// </summary>
@@ -42,6 +44,13 @@ public class AlienHealth : MonoBehaviour
         flare.SetActive(true);
         alienGrowling.Play();
         alienScreech.PlayDelayed(5.0f);
+        StartCoroutine(loadMainLevel());
+    }
+
+    IEnumerator loadMainLevel()
+    {
+        yield return new WaitForSeconds(10.0f);
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void PlayScreechAudio() {
