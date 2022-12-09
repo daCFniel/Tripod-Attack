@@ -13,6 +13,8 @@ public class StaminaSystem : MonoBehaviour
     [SerializeField] float staminaRegenAmount = 2f;
     [SerializeField] float staminaRegenInterval = 0.1f;
     public static float maxStamina = 100f;
+    [Header("SFX")]
+    [SerializeField] AudioSource heavyBreathingSound;
     float currentStamina;
     Coroutine regenStamina;
     public static Action<float> OnStaminaChange;
@@ -22,6 +24,7 @@ public class StaminaSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        heavyBreathingSound.Play();
         controller = GetComponent<CustomCharacterController>();
         currentStamina = maxStamina;
     }
@@ -50,6 +53,7 @@ public class StaminaSystem : MonoBehaviour
             }
 
             OnStaminaChange?.Invoke(currentStamina);
+            HandleHeavyBreathing();
 
             // Disable sprinting when stamina reaches 0
             if (currentStamina <= 0f)
@@ -63,6 +67,11 @@ public class StaminaSystem : MonoBehaviour
         {
             regenStamina = StartCoroutine(RegenStamina());
         }
+    }
+
+    private void HandleHeavyBreathing()
+    {
+        heavyBreathingSound.volume = Mathf.InverseLerp(maxStamina, 0, currentStamina);
     }
 
     private IEnumerator RegenStamina()
@@ -85,6 +94,7 @@ public class StaminaSystem : MonoBehaviour
             }
 
             OnStaminaChange?.Invoke(currentStamina);
+            HandleHeavyBreathing();
 
             yield return timeToWait;
         }
