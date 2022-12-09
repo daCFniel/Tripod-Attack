@@ -22,11 +22,12 @@ public class Inventory : MonoBehaviour
     private void OnEnable()
     {
         TestItem.OnCollect += Add;
-
+        GenericItem.OnCollect += Add;
     }
     private void OnDisable()
     {
         TestItem.OnCollect -= Add;
+        GenericItem.OnCollect -= Add;
     }
     public void Add(ItemData itemData)
     {
