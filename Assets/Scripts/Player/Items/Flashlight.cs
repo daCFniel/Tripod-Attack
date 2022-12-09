@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 /// <summary>
 /// Daniel Bielech db662 - COMP6100
@@ -10,6 +11,7 @@ public class Flashlight : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] AudioSource sound;
     [SerializeField] GameObject parent;
+
     bool IsOn;
     // Start is called before the first frame update
     void Start()

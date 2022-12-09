@@ -15,7 +15,7 @@ public class StaminaSystem : MonoBehaviour
     public static float maxStamina = 100f;
     [Header("SFX")]
     [SerializeField] AudioSource heavyBreathingSound;
-    float currentStamina;
+    public float currentStamina;
     Coroutine regenStamina;
     public static Action<float> OnStaminaChange;
     CustomCharacterController controller;
