@@ -9,7 +9,7 @@ public class TestDamageFloor : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            HealthSystem.OnDamageTaken(100);
+            HealthSystem.OnDamageTaken(10);
         }
     }
 }

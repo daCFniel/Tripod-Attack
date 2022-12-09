@@ -14,6 +14,7 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float timeBeforeRegenStarts = 3f;
     [SerializeField] float healthRegenAmount = 1f;
     [SerializeField] float healthRegenInterval = 0.1f;
+    [SerializeField] float maxMovementPenalty = 0.5f;
     [Header("Visuals")]
     [SerializeField] RawImage bloodBorderImage;
     [SerializeField] RawImage bloodSplashImage;
@@ -86,6 +87,13 @@ public class HealthSystem : MonoBehaviour
         ApplyBloodEffect();
         ApplyGreyScaleEffect();
         HandleHeartBeat();
+        HandleMovementPenalty();
+    }
+
+    private void HandleMovementPenalty()
+    {
+        float normalized = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        controller.movementSpeedMultiplier = Mathf.Lerp(1, maxMovementPenalty, normalized);
     }
 
     private void ApplyGreyScaleEffect()
