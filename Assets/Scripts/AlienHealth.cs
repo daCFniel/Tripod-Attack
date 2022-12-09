@@ -42,7 +42,6 @@ public class AlienHealth : MonoBehaviour
         flare.SetActive(true);
         alienGrowling.Play();
         alienScreech.PlayDelayed(5.0f);
-        Destroy(GameObject.Find("Mr Grey"));
     }
 
     public void PlayScreechAudio() {

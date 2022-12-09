@@ -189,7 +189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayerInside: 0
   timeBetweenDamage: 0.5
-  damageToInflict: 10
+  damageToInflict: 20
   maskAudio: {fileID: 325428160406505666}
 --- !u!1 &325428161900671821
 GameObject:
@@ -223,7 +223,7 @@ Transform:
   - {fileID: 325428160640759637}
   - {fileID: 325428160406505667}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &325428160535336971
 PrefabInstance:

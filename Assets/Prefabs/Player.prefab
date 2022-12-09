@@ -712,6 +712,7 @@ GameObject:
   - component: {fileID: 2203293005050330004}
   - component: {fileID: 2203293006815842448}
   - component: {fileID: 2203293006815842449}
+  - component: {fileID: 7070319440486779264}
   m_Layer: 20
   m_Name: Camera
   m_TagString: MainCamera
@@ -896,6 +897,24 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!114 &7070319440486779264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2203293005050330011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67fe4e0faec59bd4f86220edda1a72b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfCells: 0
+  powerCell: {fileID: 3470766250053801606, guid: 5c36f17e7eb27dc47932011ec9736cbe, type: 3}
+  throwSpeed: 3000
+  onCellEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2203293005103260114
 GameObject:
   m_ObjectHideFlags: 0
@@ -1245,6 +1264,7 @@ GameObject:
   - component: {fileID: 2203293005195585827}
   - component: {fileID: 2203293005195585824}
   - component: {fileID: 2203293005195585825}
+  - component: {fileID: 4472025940827059964}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1461,6 +1481,19 @@ MonoBehaviour:
   interactionLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &4472025940827059964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2203293005195585831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fcffa4f17d39fe4090b3923345fa0b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shooter: {fileID: 7070319440486779264}
 --- !u!1 &2203293005540859378
 GameObject:
   m_ObjectHideFlags: 0
