@@ -136,6 +136,8 @@ public class CustomCharacterController : MonoBehaviour
         groundCheck = transform.Find("GroundCheck");
         cameraComponent = GetComponentInChildren<Camera>();
         defaultYPos = cameraComponent.transform.localPosition.y;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
