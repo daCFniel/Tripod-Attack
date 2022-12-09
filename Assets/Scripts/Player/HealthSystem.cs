@@ -30,10 +30,10 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] AudioSource pain;
     [SerializeField] List<AudioClip> onDamageSounds;
     [SerializeField] List<AudioClip> deathPianoSounds;
-    [SerializeField] AudioClip deathPlayerSound;
     [SerializeField] float painSoundTime;
     [SerializeField] float maxPainVolume;
     [SerializeField] AudioSource currentSound;
+    [SerializeField] AudioSource deathSound;
     bool painCoroutineStarted;
 
     float currentHealth;
@@ -152,9 +152,12 @@ public class HealthSystem : MonoBehaviour
         AudioClip clip = deathPianoSounds[UnityEngine.Random.Range(0, deathPianoSounds.Count)];
         currentSound.clip = clip;
         currentSound.Play();
-        AudioSource.PlayClipAtPoint(deathPlayerSound, controller.transform.position);
+
+        deathSound.Play();
 
         controller.CanSprint = false;
+        controller.canCrouch = false;
+        controller.canJump = false;
         cameraComponent.GetComponent<MouseRotation>().mouseSensivityX /= 4;
         cameraComponent.GetComponent<MouseRotation>().mouseSensivityY /= 4;
         controller.movementSpeedMultiplier /= 5;
