@@ -156,6 +156,8 @@ public class HealthSystem : MonoBehaviour
         deathSound.Play();
 
         controller.CanSprint = false;
+        controller.canCrouch = false;
+        controller.canJump = false;
         cameraComponent.GetComponent<MouseRotation>().mouseSensivityX /= 4;
         cameraComponent.GetComponent<MouseRotation>().mouseSensivityY /= 4;
         controller.movementSpeedMultiplier /= 5;

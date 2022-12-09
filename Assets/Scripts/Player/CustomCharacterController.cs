@@ -9,14 +9,14 @@ public class CustomCharacterController : MonoBehaviour
 
     [Header("Functinal Options")]
     [SerializeField] bool isOnTheGround;
-    [SerializeField] bool canJump = true;
-    [SerializeField] bool canCrouch = true;
     [SerializeField] bool canWalk = true;
     [SerializeField] bool useHeadbob = true;
     [SerializeField] bool WillSlideOnSlopes = true;
     [SerializeField] bool canUseFootsteps = true;
     public bool CanSprint = true;
     public bool CanMove = true;
+    public bool canJump = true;
+    public bool canCrouch = true;
 
     // Lambda fields
     bool IsWalking => canWalk && Input.GetKey(walkKey);
