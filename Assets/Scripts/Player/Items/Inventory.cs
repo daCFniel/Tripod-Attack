@@ -26,6 +26,9 @@ public class Inventory : MonoBehaviour
     [Header("Item Game Objects")]
     [SerializeField] GameObject flashlight;
 
+    [Header("SFX")]
+    [SerializeField] AudioSource pickupSound;
+
 
     // Control lambdas for item effects
     bool ShouldUseFlashlight => Input.GetKeyDown(flashlightKey) && hasFlashlight;
@@ -62,6 +65,7 @@ public class Inventory : MonoBehaviour
 
     public void Add(ItemData itemData)
     {
+        pickupSound.Play();
         InventoryItem newItem = new(itemData);
         inventory.Add(newItem);
         Debug.Log($"Added {itemData.displayName} to the Inventory.");
