@@ -70,7 +70,7 @@ public class Inventory : MonoBehaviour
         Debug.Log($"Added {itemData.displayName} to the Inventory.");
         // Display information about the item
         itemInfoImage.sprite = itemData.icon;
-        itemInfoText.text = $"You just picked {itemData.displayName}. \n {itemData.description}";
+        itemInfoText.text = $"You just picked up the {itemData.displayName}. \n {itemData.description}";
         itemInfoPanel.SetActive(true);
         StartCoroutine(HideItemInfoDialog());
         HandleInventory(itemData);
