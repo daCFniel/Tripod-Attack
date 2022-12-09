@@ -19,6 +19,8 @@ public class Inventory : MonoBehaviour
     [Header("Control Flags")]
     [SerializeField] bool hasFlashlight;
     [SerializeField] bool hasBinoculars;
+    public bool hasAxe;
+    public bool hasGasMask;
 
     [Header("Controls")]
     [SerializeField] KeyCode flashlightKey = KeyCode.F;
@@ -83,6 +85,12 @@ public class Inventory : MonoBehaviour
                 break;
             case "2": // Binoculars
                 hasBinoculars = true;
+                break;
+            case "3": // Axe
+                hasAxe = true;
+                break;
+            case "4": // Gas Mask
+                hasGasMask = true;
                 break;
             default:
                 Debug.Log("Item ID:" + itemData.id + " not recognized");

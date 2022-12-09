@@ -3,6 +3,12 @@ using UnityEngine;
 public class FallenTree : Interactable
 {
     bool IsFocused = false;
+    private Inventory inventory;
+
+    private void Start()
+    {
+        inventory = GameObject.FindGameObjectWithTag("Player").transform.Find("Inventory").GetComponent<Inventory>();
+    }
 
     public override void OnFocus()
     {
@@ -18,6 +24,10 @@ public class FallenTree : Interactable
     {
         print("Interacted with: " + gameObject.name);
 
+        if (inventory.hasAxe)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     public override void OnLoseFocus()
