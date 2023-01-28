@@ -17,10 +17,11 @@ public class Inventory : MonoBehaviour
     [SerializeField] int displayInfoTime = 5;
 
     [Header("Control Flags")]
-    [SerializeField] bool hasFlashlight;
-    [SerializeField] bool hasBinoculars;
+    public bool hasFlashlight;
+    public bool hasBinoculars;
     public bool hasAxe;
     public bool hasGasMask;
+    public bool hasScubaMask;
 
     [Header("Controls")]
     [SerializeField] KeyCode flashlightKey = KeyCode.F;
@@ -30,6 +31,12 @@ public class Inventory : MonoBehaviour
 
     [Header("SFX")]
     [SerializeField] AudioSource pickupSound;
+    [SerializeField] AudioSource finalMusic;
+    [SerializeField] AudioSource ambientMusic;
+    [SerializeField] List<AudioClip> ambientTracks;
+
+    [Header("Special Interactions")]
+    [SerializeField] GameObject pondTrap;
 
 
     // Control lambdas for item effects
@@ -92,14 +99,27 @@ public class Inventory : MonoBehaviour
                 break;
             case "3": // Axe
                 hasAxe = true;
+                pondTrap.SetActive(true);
                 break;
             case "4": // Gas Mask
                 hasGasMask = true;
+                finalMusic.Play();
+                break;
+            case "5": // Scuba Mask
+                hasScubaMask = true;
                 break;
             default:
                 Debug.Log("Item ID:" + itemData.id + " not recognized");
                 break;
         }
+        PlayRandomAmbientTrack();
+    }
+
+    private void PlayRandomAmbientTrack()
+    {
+        AudioClip clip = ambientTracks[UnityEngine.Random.Range(0, ambientTracks.Count)];
+        ambientMusic.clip = clip;
+        if (!ambientMusic.isPlaying) ambientMusic.Play();
     }
 
     public void Remove(ItemData itemData)

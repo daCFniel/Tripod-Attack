@@ -8,16 +8,17 @@ public class Delay : MonoBehaviour
 
     private IEnumerator coroutine;
 
+    public float seconds;
+
     // Start is called before the first frame update
     void Start()
     {
-        coroutine = beginButtonDelay(31f);
+        coroutine = beginButtonDelay(seconds);
         StartCoroutine(coroutine);
     }
 
     IEnumerator beginButtonDelay(float delay)
     {
-        beginButton.SetActive(false);
         yield return new WaitForSeconds(delay);
         beginButton.SetActive(true);
     }

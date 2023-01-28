@@ -17,6 +17,9 @@ public class AIAlienChaser : PathFind
     public float jumpForceUpward = 7.5f;
 
     public AudioSource attackAudio;
+    public AudioSource chaseAudio;
+    public float muteChaseAudioTime;
+    public float chaseAudioVolume;
 
     private void Tick()
     {
@@ -34,6 +37,8 @@ public class AIAlienChaser : PathFind
 
     protected override void Wander()
     {
+        if (chaseAudio.volume == chaseAudioVolume) StartCoroutine(MuteChaseAudio());
+
         base.Wander();
 
         if (Vector3.Distance(transform.position, lastSeenPlayerPos) <= 10.0f)
@@ -54,8 +59,23 @@ public class AIAlienChaser : PathFind
         Tick();
     }
 
+    private IEnumerator MuteChaseAudio()
+    {
+        float timeElapsed = 0f;
+
+        while (timeElapsed < muteChaseAudioTime)
+        {
+            chaseAudio.volume = chaseAudioVolume - Mathf.InverseLerp(0, muteChaseAudioTime, timeElapsed) / 2;
+            Debug.Log(Mathf.InverseLerp(0, muteChaseAudioTime, timeElapsed) / 2);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
+
     protected override void Chase()
     {
+        chaseAudio.volume = chaseAudioVolume;
+
         base.Chase();
 
         timeSinceLastSeenPlayer = 0.0f;
@@ -134,7 +154,7 @@ public class AIAlienChaser : PathFind
 
         attackAudio.Play();
 
-        HealthSystem.OnDamageTaken(25);
+        HealthSystem.OnDamageTaken(Random.Range(10,40));
 
         currentAttackTimeout = 0.0f;
     }

@@ -13,7 +13,7 @@ Shader "Fantasy Forest/StandardNoCulling"
 
 	SubShader
 	{
-		Tags{ "RenderType" = "TransparentCutout"  "Queue" = "Geometry+0" }
+		Tags{ "RenderType" = "TransparentCutout"  "Queue" = "Geometry+0" "TerrainCompatible" = "True" }
 		Cull Off
 		CGPROGRAM
 		#pragma target 3.0
@@ -44,7 +44,6 @@ Shader "Fantasy Forest/StandardNoCulling"
 		ENDCG
 	}
 	Fallback "Diffuse"
-	CustomEditor "ASEMaterialInspector"
 }
 /*ASEBEGIN
 Version=16800

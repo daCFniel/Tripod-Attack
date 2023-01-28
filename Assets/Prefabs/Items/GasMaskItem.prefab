@@ -104,7 +104,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2553614799661976606}
   - component: {fileID: 2553614799661976576}
-  - component: {fileID: 2553614799661976577}
+  - component: {fileID: 7725931715166540530}
   m_Layer: 0
   m_Name: GasMaskItem
   m_TagString: Untagged
@@ -121,13 +121,13 @@ Transform:
   m_GameObject: {fileID: 2553614799661976607}
   m_LocalRotation: {x: -0.2044107, y: 0, z: 0, w: 0.97888523}
   m_LocalPosition: {x: 18.32, y: -0.24, z: -50.9}
-  m_LocalScale: {x: 2, y: 2, z: 2}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2553614797812231671}
   - {fileID: 5153022215417075318}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: -23.59, y: 0, z: 0}
 --- !u!114 &2553614799661976576
 MonoBehaviour:
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemData: {fileID: 11400000, guid: 8f18c87be2631d749beac1901313108f, type: 2}
---- !u!135 &2553614799661976577
+--- !u!135 &7725931715166540530
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,11 +150,11 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2553614799661976607}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.59
-  m_Center: {x: 0, y: 0.28, z: 0.15}
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2553614799667541926
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -31,6 +31,8 @@ public class AIAlienMother : MonoBehaviour
     public GameObject mainLight;
     private Quaternion mainLightDefaultRot;
 
+    public bool isAlive = true;
+
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -74,72 +76,76 @@ public class AIAlienMother : MonoBehaviour
 
     private void LateUpdate()
     {
-        currentTime += Time.deltaTime;
-
-        // If player is too close, spot them.
-        if (Vector3.Distance(transform.position, player.transform.position) <= distanceToSeePlayer)
+        if (isAlive)
         {
-            if (RaycastHitPlayer())
+            currentTime += Time.deltaTime;
+
+            // If player is too close, spot them.
+            if (Vector3.Distance(transform.position, player.transform.position) <= distanceToSeePlayer)
             {
-                manager.SendChasers(player.transform.position);
-                currentSightTimeout = 0.0f;
+                if (RaycastHitPlayer())
+                {
+                    if (manager) manager.SendChasers(player.transform.position);
+                    currentSightTimeout = 0.0f;
 
-                TurnTowardsPlayer();
-                SmoothRotation();
+                    TurnTowardsPlayer();
+                    SmoothRotation();
 
-                mainLight.transform.LookAt(player.transform);
-                mainLight.GetComponent<Light>().color = Color.red;
-                animator.SetBool("IsMoving", false);
+                    mainLight.transform.LookAt(player.transform);
+                    mainLight.GetComponent<Light>().color = Color.red;
+                    animator.SetBool("IsMoving", false);
 
-                GetComponent<AlienHealth>().PlayScreechAudio();
+                    GetComponent<AlienHealth>().PlayScreechAudio();
 
+                    return;
+                }
+            }
+
+            currentSightTimeout += Time.deltaTime;
+
+            if (currentSightTimeout <= sightTimeout)
+            {
                 return;
             }
-        }
 
-        currentSightTimeout += Time.deltaTime;
+            ResetLighting();
 
-        if (currentSightTimeout <= sightTimeout) {
-            return;
-        }
-
-        ResetLighting();
-
-        if (Vector3.Distance(transform.position, targetWaypoint.transform.position) <= distanceToReach)
-        {
-            if (!hasReachedTarget)
+            if (Vector3.Distance(transform.position, targetWaypoint.transform.position) <= distanceToReach)
             {
-                currentTime = 0.0f;
-                hasReachedTarget = true;
-                currentWaypoint = targetWaypoint;
-            }
+                if (!hasReachedTarget)
+                {
+                    currentTime = 0.0f;
+                    hasReachedTarget = true;
+                    currentWaypoint = targetWaypoint;
+                }
 
-            if (currentTime >= timeBetweenMovement)
+                if (currentTime >= timeBetweenMovement)
+                {
+                    MoveToNewWaypoint();
+                }
+
+                animator.SetBool("IsMoving", false);
+            }
+            else
             {
-                MoveToNewWaypoint();
+                Vector3 movement = (targetWaypoint.transform.position - transform.position).normalized * movementSpeed * Time.deltaTime;
+                transform.position += movement;
+
+
+                float oldY = transform.rotation.eulerAngles.y;
+                transform.LookAt(targetWaypoint.transform);
+                targetRotationY = transform.rotation.eulerAngles.y;
+
+                transform.rotation = Quaternion.Euler(new Vector3(
+                    0,
+                    oldY,
+                    0
+                ));
+
+                SmoothRotation();
+
+                animator.SetBool("IsMoving", true);
             }
-
-            animator.SetBool("IsMoving", false);
-        }
-        else
-        {
-            Vector3 movement = (targetWaypoint.transform.position - transform.position).normalized * movementSpeed * Time.deltaTime;
-            transform.position += movement;
-
-
-            float oldY = transform.rotation.eulerAngles.y;
-            transform.LookAt(targetWaypoint.transform);
-            targetRotationY = transform.rotation.eulerAngles.y;
-
-            transform.rotation = Quaternion.Euler(new Vector3(
-                0,
-                oldY,
-                0
-            ));
-
-            SmoothRotation();
-
-            animator.SetBool("IsMoving", true);
         }
     }
 

@@ -21,7 +21,6 @@ public class StaminaSystem : MonoBehaviour
     CustomCharacterController controller;
     bool ShouldUseStamina => controller.CanMove && controller.CanSprint && useStamina;
 
-    // Start is called before the first frame update
     void Start()
     {
         heavyBreathingSound.Play();
@@ -55,7 +54,7 @@ public class StaminaSystem : MonoBehaviour
             OnStaminaChange?.Invoke(currentStamina);
             HandleHeavyBreathing();
 
-            // Disable sprinting when stamina reaches 0
+            // Disable sprinting when the stamina reaches 0
             if (currentStamina <= 0f)
             {
                 controller.CanSprint = false;
@@ -71,7 +70,7 @@ public class StaminaSystem : MonoBehaviour
 
     private void HandleHeavyBreathing()
     {
-        heavyBreathingSound.volume = Mathf.InverseLerp(maxStamina, 0, currentStamina);
+        heavyBreathingSound.volume = Mathf.InverseLerp(maxStamina, 0, currentStamina) / 4;
     }
 
     private IEnumerator RegenStamina()

@@ -13,10 +13,12 @@ public class CameraZoom : MonoBehaviour
     float defaultFOV;
     Coroutine zoomRoutine;
     Camera cameraComponent;
+    Inventory inventory;
 
     private void Start()
     {
         cameraComponent = GetComponent<Camera>();
+        inventory = GameObject.FindGameObjectWithTag("Player").transform.Find("Inventory").GetComponent<Inventory>();
         defaultFOV = cameraComponent.fieldOfView;
     }
 
@@ -24,7 +26,7 @@ public class CameraZoom : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (canZoom) ZoomCamera();
+        if (canZoom && inventory.hasBinoculars) ZoomCamera();
     }
 
 

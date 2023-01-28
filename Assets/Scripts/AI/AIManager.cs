@@ -17,6 +17,8 @@ public class AIManager : MonoBehaviour
     public float timeBetweenSpawns = 0.5f;
     private float timeElapsed = 0.0f;
 
+    public AudioSource spawnSound;
+
     private void Start()
     {
         // ChangeSpeedMultiplier(5.0f);
@@ -66,6 +68,7 @@ public class AIManager : MonoBehaviour
         enemy.transform.position = enemySpawnPosition.transform.position;
         enemy.SetActive(true);
         chasersActive += 1;
+        if (!spawnSound.isPlaying) spawnSound.Play();
     }
 
     public void SendChasers(Vector3 playerPosition)

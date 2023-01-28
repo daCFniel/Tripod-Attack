@@ -28,6 +28,7 @@ public class PathFind : MonoBehaviour
     protected AIManager manager;
 
     public AudioSource spottedPlayerNoise;
+    public AudioSource hornSound;
 
     public enum State
     {
@@ -102,6 +103,10 @@ public class PathFind : MonoBehaviour
     protected void PlaySpottedNoise() {
         if (!spottedPlayerNoise.isPlaying) {
             spottedPlayerNoise.Play();
+        }
+        if (!hornSound.isPlaying)
+        {
+            hornSound.Play();
         }
     }
 

@@ -22,9 +22,11 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float showDeathScreenAfter;
     [SerializeField] GameObject deathScreen;
     [SerializeField] float timeToFallOnDeath;
+    [SerializeField] GameObject ammoUI;
     PostProcessVolume playerPPV;
     float defaultSaturation;
     ColorGrading colorGrading;
+    float deathAnimationTime = 10;
     [Header("SFX")]
     [SerializeField] AudioSource heartBeat;
     [SerializeField] AudioSource pain;
@@ -38,20 +40,25 @@ public class HealthSystem : MonoBehaviour
 
     float currentHealth;
     Coroutine regenHealth;
+    bool isAlive = true;
     public static Action<float> OnDamageTaken;
+    public static Action<float> OnDrowning;
     public static Action<float> OnDamage;
     public static Action<float> OnHeal;
 
     CustomCharacterController controller;
     CharacterController charController;
+
     private void OnEnable()
     {
         OnDamageTaken += ApplyDamage;
+        OnDrowning += Drown;
     }
 
     private void OnDisable()
     {
         OnDamageTaken -= ApplyDamage;
+        OnDrowning -= Drown;
     }
 
 
@@ -70,21 +77,40 @@ public class HealthSystem : MonoBehaviour
 
     private void ApplyDamage(float dmgAmount)
     {
-        RotateBloodSplash();
-        currentHealth -= dmgAmount;
-        OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
-        PlayOnDamageSound();
-        HandleHpLossEffects();
+        if (isAlive)
+        {
+            RotateBloodSplash();
+            currentHealth -= dmgAmount;
+            OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
+            PlayOnDamageSound();
+            HandleHpLossEffects();
 
-        if (currentHealth <= 0) KillPlayer();
-        else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
+            if (currentHealth <= 0) KillPlayer();
+            else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
 
-        regenHealth = StartCoroutine(RegenHealth()); //Start new hp regen timer
+            regenHealth = StartCoroutine(RegenHealth()); //Start new hp regen timer
+        }
+    }
+
+    private void Drown(float dmgAmount)
+    {
+        if (isAlive)
+        {
+            currentHealth -= dmgAmount;
+            OnDamage?.Invoke(currentHealth); // Invoke only if anything is listening to the acton event
+            ApplyBloodEffect(false);
+            ApplyGreyScaleEffect();
+
+            if (currentHealth <= 0) KillPlayer();
+            else if (regenHealth != null) StopCoroutine(regenHealth); // Reset the hp regen timer if the character receives damage
+
+            regenHealth = StartCoroutine(RegenHealth()); //Start new hp regen timer
+        }
     }
 
     private void HandleHpLossEffects()
     {
-        ApplyBloodEffect();
+        ApplyBloodEffect(true);
         ApplyGreyScaleEffect();
         HandleHeartBeat();
         HandleMovementPenalty();
@@ -119,14 +145,14 @@ public class HealthSystem : MonoBehaviour
         }
     }
 
-    private void ApplyBloodEffect()
+    private void ApplyBloodEffect(bool drawBloodSplash)
     {
         Color borderColor = bloodBorderImage.color;
-        Color splashColor = bloodSplashImage.color;
         float newAlpha = 1 - (currentHealth / maxHealth);
 
-        if (currentHealth < maxHealth / 2)
+        if (currentHealth < maxHealth / 2 && drawBloodSplash)
         {
+            Color splashColor = bloodSplashImage.color;
             float normalizedValue = Mathf.InverseLerp(maxHealth / 2, 0, currentHealth);
             float splashAlpha = Mathf.Lerp(0, 1, normalizedValue);
             splashColor.a = splashAlpha;
@@ -138,22 +164,29 @@ public class HealthSystem : MonoBehaviour
     }
     private void HandleHeartBeat()
     {
-        heartBeat.volume = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        float newVolume = Mathf.InverseLerp(maxHealth, 0, currentHealth);
+        heartBeat.volume = newVolume;
     }
     private void KillPlayer()
     {
+        Invoke(nameof(FixSaturation), deathAnimationTime);
+        Invoke(nameof(EnableCursor), deathAnimationTime);
+
+        isAlive = false;
         // Set health to 0 if overkill occured (negative hp)
         currentHealth = 0;
 
         if (regenHealth != null) StopCoroutine(regenHealth);
 
         print("DEAD! YOU HAVE BEEN KILLED");
+        if (ammoUI) ammoUI.SetActive(false);
 
         AudioClip clip = deathPianoSounds[UnityEngine.Random.Range(0, deathPianoSounds.Count)];
         currentSound.clip = clip;
         currentSound.Play();
 
         deathSound.Play();
+        StartCoroutine(MuteSounds());
 
         controller.CanSprint = false;
         controller.canCrouch = false;
@@ -165,6 +198,19 @@ public class HealthSystem : MonoBehaviour
         StartCoroutine(ShowDeathScreen());
 
 
+    }
+
+    private void EnableCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    private void FixSaturation()
+    {
+        // Unity bug fix to reset the saturation
+        playerPPV.profile.TryGetSettings(out colorGrading);
+        colorGrading.saturation.value = defaultSaturation;
     }
 
     private IEnumerator FallOnTheGround()
@@ -203,7 +249,7 @@ public class HealthSystem : MonoBehaviour
         {
             currentHealth += healthRegenAmount;
 
-            HandleHpLossEffects();
+             if (isAlive) HandleHpLossEffects();
 
             // Prevent overhealing
             if (currentHealth > maxHealth) currentHealth = maxHealth;
@@ -243,5 +289,17 @@ public class HealthSystem : MonoBehaviour
         }
         pain.volume = 0f;
         painCoroutineStarted = false;
+    }
+
+    IEnumerator MuteSounds()
+    {
+        float timeElapsed = 0f;
+
+        while (timeElapsed < deathAnimationTime)
+        {
+            AudioListener.volume = 1 - Mathf.InverseLerp(0, deathAnimationTime, timeElapsed);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
     }
 }

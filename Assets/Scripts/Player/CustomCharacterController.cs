@@ -8,10 +8,10 @@ public class CustomCharacterController : MonoBehaviour
 {
 
     [Header("Functional Options")]
-    [SerializeField] bool isOnTheGround;
-    [SerializeField] bool canWalk = true;
-    [SerializeField] bool useHeadbob = true;
-    [SerializeField] bool WillSlideOnSlopes = true;
+    public bool isOnTheGround;
+    public bool canWalk = true;
+    public bool useHeadbob = true;
+    public bool WillSlideOnSlopes = true;
     public bool canUseFootsteps = true;
     public bool CanSprint = true;
     public bool CanMove = true;
@@ -21,7 +21,7 @@ public class CustomCharacterController : MonoBehaviour
     // Lambda fields
     bool IsWalking => canWalk && Input.GetKey(walkKey);
     bool ShouldJump => Input.GetKeyDown(jumpKey) && isOnTheGround && canJump;
-    float MoveSpeed => IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? currentSprintSpeed : runSpeed * movementSpeedMultiplier;
+    float MoveSpeed => (IsCrouching ? crouchSpeed : IsWalking ? walkSpeed : IsSprinting ? currentSprintSpeed : runSpeed) * movementSpeedMultiplier;
     bool ShouldCrouch => (Input.GetKeyDown(crouchKey) || Input.GetKeyUp(crouchKey)) && !duringCrouchAnimation && isOnTheGround && canCrouch;
     float BobSpeed => IsCrouching ? crouchBobSpeed : IsWalking ? walkBobSpeed : IsSprinting ? currentSprintBobSpeed : runBobSpeed;
     float BobAmount => IsCrouching ? crouchBobAmount : IsWalking ? walkBobAmount : IsSprinting ? sprintBobAmount : runBobAmount;
@@ -46,8 +46,8 @@ public class CustomCharacterController : MonoBehaviour
 
     [Header("Jump Parameters")]
     [SerializeField] float jumpHeight = 10f;
-    [SerializeField] float groundDistance = 0.4f;
     [SerializeField] private AudioSource jumpSound;
+    //[SerializeField] float groundDistance = 0.4f; // For custom ground checking
 
     [Header("Crouch Parameters")]
     [SerializeField] float crouchHeight = 0.5f;
@@ -69,7 +69,7 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] float currentSprintBobSpeed = 30f;
     [SerializeField] float sprintBobAmount = 0.1f;
     [SerializeField] float timeToReturnCamera = 0.1f;
-    float defaultYPos = 0; // camera position
+    float defaultYPos = 0; // default facamera position
     float timer; // used to determine where the camera should be at given moment
     bool duringHeightLevelAnimation;
 
@@ -88,11 +88,12 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] float fallWillHurtVelocity = 5f;
     [SerializeField] float fallTime;
     public Vector3 velocity;
-    public bool implyFallDamage;
+    public bool implyFallDamage = true;
     float zeroVelocity = -2f;
     bool falling;
     float acceleration;
-    const float GRAVITY = 9.81f;
+    public float currentGravity = 9.81f;
+    public static float GRAVITY = 9.81f;
 
     [Header("Controls")]
     [SerializeField] KeyCode sprintKey = KeyCode.LeftShift;
@@ -132,12 +133,10 @@ public class CustomCharacterController : MonoBehaviour
     void Awake()
     {
         controller = GetComponent<CharacterController>();
-        acceleration = -GRAVITY;
+        acceleration = -currentGravity;
         groundCheck = transform.Find("GroundCheck");
         cameraComponent = GetComponentInChildren<Camera>();
         defaultYPos = cameraComponent.transform.localPosition.y;
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -184,7 +183,7 @@ public class CustomCharacterController : MonoBehaviour
         if (ShouldJump)
         {
             // Calculate velocity needed to jump set height
-            float v = Mathf.Sqrt(jumpHeight * GRAVITY * 2);
+            float v = Mathf.Sqrt(jumpHeight * currentGravity * 2);
             velocity.y = v;
             jumpSound.Play();
         }
@@ -201,6 +200,7 @@ public class CustomCharacterController : MonoBehaviour
 
     private void ApplyGravity()
     {
+        acceleration = -currentGravity;
         // Applying gravity physics to the movement
         velocity.y += acceleration * Time.deltaTime; // v = a * t
         controller.Move(velocity * Time.deltaTime);

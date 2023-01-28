@@ -7,8 +7,20 @@ public class AIAlienScout : PathFind
 {
     public Light spotlight;
 
+    public Material chaseMaterial;
+    public GameObject skinObject;
+    Material defaultMaterial;
+    Renderer renderComp;
+
+    private void Awake()
+    {
+        renderComp = skinObject.GetComponent<Renderer>();
+        defaultMaterial = renderComp.material;
+    }
+
     protected override void Wander()
     {
+        renderComp.material = defaultMaterial;
         base.Wander();
 
         spotlight.color = Color.white;
@@ -18,6 +30,7 @@ public class AIAlienScout : PathFind
 
     protected override void Chase()
     {
+        renderComp.material = chaseMaterial;
         base.Chase();
 
         spotlight.color = Color.red;
